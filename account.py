@@ -39,8 +39,8 @@ def login_user(username, password):
 def show_login():
     st.title("Авторизация")
 
-    choice = st.selectbox("Выберите действие", ["Вход", "Регистрация"])
-    username = st.text_input("Имя пользователя", key="username")
+    choice = st.selectbox("Выберите действие", ["Вход"])
+    username = st.text_input("Имя пользователя", key="login_username")
     password = st.text_input("Пароль", type="password", key="password")
 
     if choice == "Регистрация":
