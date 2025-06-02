@@ -9,7 +9,6 @@ from json_utils import count_root_objects, validate_json
 def main():
     # ==== Авторизация ====
     authenticator = get_authenticator()
-    name, auth_status, username = authenticator.login(location='main')
     result = authenticator.login(location='main')
 
     if result is not None:
