@@ -57,6 +57,9 @@ choice = st.selectbox("Выберите действие", ["Вход", "Рег�
 username = st.text_input("Имя пользователя")
 password = st.text_input("Пароль", type="password")
 
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
 if choice == "Регистрация":
     if st.button("Зарегистрироваться"):
         if register_user_safe(username, password):
@@ -66,6 +69,10 @@ if choice == "Регистрация":
 else:
     if st.button("Войти"):
         if login_user(username, password):
+            st.session_state.logged_in = True
             st.success("Успешный вход!")
         else:
             st.error("Неверные учетные данные.")
+
+if st.session_state.logged_in:
+    st.write(f"Вы вошли как {username}")
