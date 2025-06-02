@@ -9,14 +9,14 @@ from json_utils import count_root_objects, validate_json
 def main():
     # ==== Авторизация ====
     authenticator = load_authenticator()
-    name, authentication_status, username = authenticator.login('Login', 'main')
+    name, auth_status, username = authenticator.login('Login', 'main')
 
-    if authentication_status is False:
-        st.error("Неверный логин или пароль")
-        return
-    if authentication_status is None:
-        st.warning("Пожалуйста, введите логин и пароль")
-        return
+    if auth_status:
+        st.success(f"Добро пожаловать, {name}!")
+    elif auth_status is False:
+        st.error("Неверное имя пользователя или пароль")
+    else:
+        st.warning("Пожалуйста, введите имя пользователя и пароль")
 
     # Пользователь авторизован
     st.success(f"Добро пожаловать, {name}!")
