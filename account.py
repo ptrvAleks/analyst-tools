@@ -5,21 +5,20 @@ import firebase_admin
 from firebase_admin import credentials
 import json
 
-# Firebase Realtime Database URL
+# --- Константы ---
 FIREBASE_URL = "https://analyst-tools-65fbf-default-rtdb.europe-west1.firebasedatabase.app/"
 
-# Загружаем данные авторизации Firebase из secrets
+# --- Firebase Init ---
 firebase_info = st.secrets["firebase"]
 cred_dict = dict(firebase_info)
 cred = credentials.Certificate(cred_dict)
 
-# Инициализируем Firebase только один раз
 if not firebase_admin._apps:
     firebase_admin.initialize_app(cred, {
         'databaseURL': FIREBASE_URL
     })
 
-# --- Утилиты хеширования и работы с БД ---
+# --- Утилиты ---
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
@@ -45,38 +44,49 @@ def login_user(username, password):
         return stored_hash == hash_password(password)
     return False
 
-# --- Работа с состоянием ---
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
+# --- Состояние ---
+if "page" not in st.session_state:
+    st.session_state.page = "login"  # или "main"
 if "username" not in st.session_state:
     st.session_state.username = ""
 
-# --- Интерфейс ---
-st.title("Firebase Login")
-
-if not st.session_state.logged_in:
-    choice = st.selectbox("Выберите действие", ["Вход", "Регистрация"])
-
-    username = st.text_input("Имя пользователя", key="username_input")
-    password = st.text_input("Пароль", type="password", key="password_input")
-
-    if choice == "Регистрация":
-        if st.button("Зарегистрироваться"):
-            if register_user_safe(username, password):
-                st.success("Пользователь зарегистрирован.")
-            else:
-                st.error("Пользователь уже существует или произошла ошибка.")
+# --- Обработчики кнопок ---
+def handle_login(username, password):
+    if login_user(username, password):
+        st.session_state.username = username
+        st.session_state.page = "main"
     else:
+        st.error("Неверные учетные данные.")
+
+def handle_register(username, password):
+    if register_user_safe(username, password):
+        st.success("Пользователь зарегистрирован. Теперь войдите.")
+    else:
+        st.error("Пользователь уже существует.")
+
+def logout():
+    st.session_state.page = "login"
+    st.session_state.username = ""
+
+# --- UI ---
+st.title("🔥 Firebase Login System")
+
+if st.session_state.page == "login":
+    tab_login, tab_register = st.tabs(["Вход", "Регистрация"])
+
+    with tab_login:
+        login_user_input = st.text_input("Имя пользователя", key="login_username")
+        login_pass_input = st.text_input("Пароль", type="password", key="login_password")
         if st.button("Войти"):
-            if login_user(username, password):
-                st.session_state.logged_in = True
-                st.session_state.username = username
-                st.success("Успешный вход!")
-            else:
-                st.error("Неверные учетные данные.")
-else:
+            handle_login(login_user_input, login_pass_input)
+
+    with tab_register:
+        reg_user_input = st.text_input("Новый пользователь", key="register_username")
+        reg_pass_input = st.text_input("Пароль", type="password", key="register_password")
+        if st.button("Зарегистрироваться"):
+            handle_register(reg_user_input, reg_pass_input)
+
+elif st.session_state.page == "main":
     st.success(f"Вы вошли как {st.session_state.username}")
-    if st.button("Выйти"):
-        st.session_state.logged_in = False
-        st.session_state.username = ""
-        st.experimental_rerun()
+    st.button("Выйти", on_click=logout)
+    # Здесь размести основную функциональность
