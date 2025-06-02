@@ -10,13 +10,19 @@ def main():
     # ==== Авторизация ====
     authenticator = get_authenticator()
     name, auth_status, username = authenticator.login(location='main')
+    result = authenticator.login(location='main')
 
-    if auth_status:
-        st.success(f"Добро пожаловать, {name}!")
-    elif auth_status is False:
-        st.error("Неверное имя пользователя или пароль")
+    if result is not None:
+        name, auth_status, username = result
+
+        if auth_status:
+            st.success(f"Добро пожаловать, {name}!")
+        elif auth_status is False:
+            st.error("Неверные имя пользователя или пароль")
+        else:
+            st.warning("Пожалуйста, введите имя пользователя и пароль")
     else:
-        st.warning("Пожалуйста, введите имя пользователя и пароль")
+        st.error("Ошибка авторизации: login() вернул None")
 
     # Пользователь авторизован
     st.success(f"Добро пожаловать, {name}!")
