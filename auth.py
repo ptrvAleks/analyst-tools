@@ -11,10 +11,10 @@ def load_authenticator():
         config = yaml.load(file, Loader=SafeLoader)
 
     authenticator = stauth.Authenticate(
-        credentials=config["credentials"],
-        cookie_name=config["cookie"]["name"],
-        key=config["cookie"]["key"],
-        cookie_expiry_days=config["cookie"]["expiry_days"],
-        preauthorized=config.get("preauthorized", {})
+        config["credentials"],
+        config["cookie"]["name"],
+        config["cookie"]["key"],
+        config["cookie"]["expiry_days"],
+        config.get("preauthorized", {})
     )
     return authenticator
