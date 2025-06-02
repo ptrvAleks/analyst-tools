@@ -1,0 +1,15 @@
+credentials:
+  usernames:
+    admin:
+      name: Admin User
+      password: "$2b$12$nZkT7aTe4tGc4oZZjkUv6O.QZ6gNMXAc2Fg9ZKlGEZkMPNK4ILmUm"  # хеш от "1234"
+    analyst:
+      name: Analyst
+      password: "$2a$12$X.o/us21o5wPNuPYOs62KOW0Ie8bb0anOvWvcNXOmLACbXetkmM5S"  # хеш от "qwerty"
+cookie:
+  expiry_days: 1
+  key: "some_signature_key"
+  name: "login_cookie"
+preauthorized:
+  emails:
+    - example@example.com
