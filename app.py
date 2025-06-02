@@ -9,7 +9,7 @@ from json_utils import count_root_objects, validate_json
 def main():
     # ==== Авторизация ====
     authenticator = load_authenticator()
-    name, authentication_status, username = authenticator.login("Вход", "main")
+    name, authentication_status, username = authenticator.login("Вход", location="main")
 
     if authentication_status is False:
         st.error("Неверный логин или пароль")
