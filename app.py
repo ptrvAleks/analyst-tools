@@ -21,6 +21,8 @@ def run_db_tool():
     st.info("Здесь позже будет функционал для взаимодействия с вашей базой данных.")
 
 def main():
+    if not st.session_state.get("authenticated", False):
+        st.stop()  # Останавливаем app.py, пока пользователь не войдёт
     st.title("Вход в систему")
     st.sidebar.title("Авторизация")
 
