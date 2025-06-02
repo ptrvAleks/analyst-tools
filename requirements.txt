@@ -3,3 +3,4 @@ streamlit-authenticator
 bcrypt
 PyYAML
 sqlalchemy
+firebase_admin

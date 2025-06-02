@@ -1,8 +1,6 @@
 import streamlit as st
-from auth import get_authenticator
+from account import login_user
 from json_utils import count_root_objects, validate_json
-
-# из db_utils можно импортировать функции, когда понадобится
 # from db_utils import get_db_session
 
 def run_json_tool():
@@ -21,37 +19,28 @@ def run_json_tool():
 def run_db_tool():
     st.header("Работа с БД (пока заглушка)")
     st.info("Здесь позже будет функционал для взаимодействия с вашей базой данных.")
-    # Пример: сделать кнопку, которая вытягивает первые 5 строк из таблицы
-    # if st.button("Получить 5 записей из users"):
-    #     with get_db_session() as db:
-    #         rows = db.execute("SELECT * FROM users LIMIT 5").fetchall()
-    #         st.write(rows)
 
 def main():
-    # ==== Авторизация ====
-    authenticator = get_authenticator()
-    result = authenticator.login(location='main')
+    st.title("Вход в систему")
+    st.sidebar.title("Авторизация")
 
-    if result is not None:
-        name, auth_status, username = result
+    username = st.sidebar.text_input("Имя пользователя")
+    password = st.sidebar.text_input("Пароль", type="password")
+    login_btn = st.sidebar.button("Войти")
 
-        if auth_status:
-            st.success(f"Добро пожаловать, {name}!")
+    if login_btn:
+        if login_user(username, password):
+            st.success(f"Добро пожаловать, {username}!")
             st.write("---")
 
-            # ==== Основное меню ====
-            st.title("Утилиты системного аналитика")
             menu = st.sidebar.radio("Выберите утилиту", ["JSON-анализатор", "Работа с БД (заготовка)"])
 
             if menu == "JSON-анализатор":
                 run_json_tool()
             elif menu == "Работа с БД (заготовка)":
                 run_db_tool()
-
-        elif auth_status is False:
-            st.error("Неверные имя пользователя или пароль")
         else:
-            st.warning("Пожалуйста, введите имя пользователя и пароль")
+            st.error("Неверные имя пользователя или пароль")
 
 if __name__ == "__main__":
     main()
