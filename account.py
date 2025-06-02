@@ -1,22 +1,21 @@
+# account.py
 import streamlit as st
 import hashlib
 import requests
 import firebase_admin
 from firebase_admin import credentials
-import json
 
-# Firebase Realtime Database URL
 FIREBASE_URL = "https://analyst-tools-65fbf-default-rtdb.europe-west1.firebasedatabase.app/"
+firebase_info = st.secrets["firebase"]
+cred_dict = dict(firebase_info)
+cred = credentials.Certificate(cred_dict)
 
-# Инициализация Firebase (если ещё не инициализировано)
+# Не даём инициализировать второй раз
 if not firebase_admin._apps:
-    cred_dict = dict(st.secrets["firebase"])
-    cred = credentials.Certificate(cred_dict)
     firebase_admin.initialize_app(cred, {
-        'databaseURL': FIREBASE_URL
+        'databaseURL': f'{FIREBASE_URL}'
     })
 
-# Функции
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
@@ -37,33 +36,26 @@ def login_user(username, password):
         return stored_hash == hash_password(password)
     return False
 
-# Состояние
-if "authenticated" not in st.session_state:
-    st.session_state.authenticated = False
-if "username" not in st.session_state:
-    st.session_state.username = ""
+def show_login():
+    st.title("Авторизация")
 
-# UI
-st.title("Авторизация")
+    choice = st.selectbox("Выберите действие", ["Вход", "Регистрация"])
+    username = st.text_input("Имя пользователя", key="username")
+    password = st.text_input("Пароль", type="password", key="password")
 
-choice = st.radio("Выберите действие", ["Войти", "Зарегистрироваться"])
-
-username = st.text_input("Имя пользователя", key="username_input")
-password = st.text_input("Пароль", type="password", key="password_input")
-
-if choice == "Зарегистрироваться":
-    if st.button("Зарегистрироваться"):
-        if user_exists(username):
-            st.error("Пользователь уже существует.")
-        elif register_user(username, password):
-            st.success("Успешная регистрация! Теперь войдите.")
-        else:
-            st.error("Ошибка при регистрации.")
-else:
-    if st.button("Войти"):
-        if login_user(username, password):
-            st.session_state.authenticated = True
-            st.session_state.username = username
-            st.experimental_rerun()  # Обновим страницу, чтобы app.py мог запуститься
-        else:
-            st.error("Неверные имя пользователя или пароль.")
+    if choice == "Регистрация":
+        if st.button("Зарегистрироваться"):
+            if user_exists(username):
+                st.error("Пользователь уже существует.")
+            elif register_user(username, password):
+                st.success("Пользователь зарегистрирован.")
+            else:
+                st.error("Ошибка регистрации.")
+    else:
+        if st.button("Войти"):
+            if login_user(username, password):
+                st.session_state.authenticated = True
+                st.session_state.username = username
+                st.experimental_rerun()
+            else:
+                st.error("Неверные учетные данные.")

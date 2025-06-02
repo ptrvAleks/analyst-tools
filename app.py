@@ -1,5 +1,5 @@
 import streamlit as st
-from account import login_user
+from account import login_user, show_login
 from json_utils import count_root_objects, validate_json
 # from db_utils import get_db_session
 
@@ -22,6 +22,7 @@ def run_db_tool():
 
 def main():
     if not st.session_state.get("authenticated", False):
+        show_login()
         st.stop()  # Останавливаем app.py, пока пользователь не войдёт
     st.title("Вход в систему")
     st.sidebar.title("Авторизация")
