@@ -1,5 +1,5 @@
 import streamlit as st
-from auth import load_authenticator
+from auth import get_authenticator
 from json_utils import count_root_objects, validate_json
 
 
@@ -8,7 +8,7 @@ from json_utils import count_root_objects, validate_json
 
 def main():
     # ==== Авторизация ====
-    authenticator = load_authenticator()
+    authenticator = get_authenticator()
     name, auth_status, username = authenticator.login('Login', 'main')
 
     if auth_status:
