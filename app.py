@@ -24,26 +24,15 @@ def main():
     if not st.session_state.get("authenticated", False):
         show_login()
         st.stop()  # Останавливаем app.py, пока пользователь не войдёт
-    st.title("Вход в систему")
-    st.sidebar.title("Авторизация")
 
-    username = st.sidebar.text_input("Имя пользователя", key="login_username")
-    password = st.sidebar.text_input("Пароль", type="password", key="login_password")
-    login_btn = st.sidebar.button("Войти")
+    # Главное меню
+    st.sidebar.title("Навигация")
+    choice = st.sidebar.selectbox("Выберите инструмент:", ["Проверка JSON", "Работа с БД"])
 
-    if login_btn:
-        if login_user(username, password):
-            st.success(f"Добро пожаловать, {username}!")
-            st.write("---")
-
-            menu = st.sidebar.radio("Выберите утилиту", ["JSON-анализатор", "Работа с БД (заготовка)"])
-
-            if menu == "JSON-анализатор":
-                run_json_tool()
-            elif menu == "Работа с БД (заготовка)":
-                run_db_tool()
-        else:
-            st.error("Неверные имя пользователя или пароль")
+    if choice == "Проверка JSON":
+        run_json_tool()
+    elif choice == "Работа с БД":
+        run_db_tool()
 
 if __name__ == "__main__":
     main()
