@@ -1,6 +1,5 @@
 import streamlit as st
 import streamlit_authenticator as stauth
-from yaml.loader import SafeLoader
 
 def load_authenticator():
     credentials = st.secrets["credentials"]
