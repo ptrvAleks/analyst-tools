@@ -10,6 +10,3 @@ cookie:
   expiry_days: 1
   key: "some_signature_key"
   name: "login_cookie"
-preauthorized:
-  emails:
-    - example@example.com
