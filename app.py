@@ -24,8 +24,8 @@ def main():
     st.title("Вход в систему")
     st.sidebar.title("Авторизация")
 
-    username = st.sidebar.text_input("Имя пользователя")
-    password = st.sidebar.text_input("Пароль", type="password")
+    username = st.sidebar.text_input("Имя пользователя", key="login_username")
+    password = st.sidebar.text_input("Пароль", type="password", key="login_password")
     login_btn = st.sidebar.button("Войти")
 
     if login_btn:
