@@ -9,7 +9,7 @@ from json_utils import count_root_objects, validate_json
 def main():
     # ==== Авторизация ====
     authenticator = get_authenticator()
-    name, auth_status, username = authenticator.login('Вход', 'main')
+    name, auth_status, username = authenticator.login(form_name='Вход', location='main')
 
     if auth_status:
         st.success(f"Добро пожаловать, {name}!")
