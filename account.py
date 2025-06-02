@@ -56,6 +56,6 @@ def show_login():
             if login_user(username, password):
                 st.session_state.authenticated = True
                 st.session_state.username = username
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("Неверные учетные данные.")
