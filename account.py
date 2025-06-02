@@ -12,11 +12,14 @@ firebase_info = st.secrets["firebase"]
 
 # Преобразуем его в dict
 cred_dict = dict(firebase_info)
-cred = credentials.Certificate(cred_dict)
 
-firebase_admin.initialize_app(cred, {
-    'databaseURL': f'{FIREBASE_URL}'
-})
+# Проверяем, инициализирован ли Firebase уже
+if not firebase_admin._apps:
+    cred = credentials.Certificate(cred_dict)
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': f'{FIREBASE_URL}'
+    })
+
 # Хеширование пароля
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
@@ -56,7 +59,7 @@ password = st.text_input("Пароль", type="password")
 
 if choice == "Регистрация":
     if st.button("Зарегистрироваться"):
-        if register_user(username, password):
+        if register_user_safe(username, password):
             st.success("Пользователь зарегистрирован.")
         else:
             st.error("Ошибка регистрации.")
