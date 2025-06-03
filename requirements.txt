@@ -2,4 +2,4 @@ streamlit
 streamlit-authenticator
 sqlalchemy
 firebase_admin
-psycopg2-binary
+streamlit-cookies-manager
