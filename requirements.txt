@@ -3,4 +3,3 @@ streamlit-authenticator
 PyYAML
 sqlalchemy
 firebase_admin
-pyautogui
