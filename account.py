@@ -70,8 +70,8 @@ def show_login():
 
             # Установка cookies на 7 дней
             expires = datetime.datetime.now() + datetime.timedelta(days=7)
-            cookies["username"] = {"value": username, "expires": expires}
-            cookies["auth"] = {"value": "true", "expires": expires}
+            cookies["username"] = username  # просто строка
+            cookies["auth"] = "true"
             cookies.save()
             st.rerun()
         elif submit:
