@@ -1,31 +1,26 @@
-import sqlalchemy
-from sqlalchemy.orm import sessionmaker
 import streamlit as st
+import re
 
-# Пример для PostgreSQL:
-DATABASE_URL = "postgresql://user:password@localhost:5432/your_db_name"
+def is_valid_guid(guid: str) -> bool:
+    pattern = r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+    return re.match(pattern, guid) is not None
 
-engine = sqlalchemy.create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-
-def get_db_session():
-    """
-    Возвращает сессию SQLAlchemy. Используйте внутри функций:
-
-        with get_db_session() as session:
-            # работать с session
-    """
-    session = SessionLocal()
-    try:
-        yield session
-    finally:
-        session.close()
 
 def run_db_tool():
-    st.header("Работа с БД (пока заглушка)")
-    league_guid = st.text_input(
-        "Лига гуид пользователя",
-        key="league_guid"
-    )
-    makeSQL_btn = st.button("Сформировать SQL")
+    st.header("Работа с БД")
+
+    with st.expander("История отпусков пользователя"):
+        league_guid = st.text_input(
+            "Лига гуид пользователя",
+            key="league_guid"
+        )
+        make_sql_btn = st.button("Сформировать SQL")
+
+        if make_sql_btn:
+            if not league_guid:
+                st.warning("Введи USERS.LEAGUE_GUID")
+            elif not is_valid_guid(league_guid):
+                st.error("Некорректный формат GUID")
+            else:
+                sql_query = f"SELECT va.*, r.* FROM users u JOIN vacation_aud va on va.user_id = u.id JOIN revinfo r on va.rev = r.rev WHERE u.league_guid = '{league_guid}'"
+                st.code(sql_query, language='sql')
