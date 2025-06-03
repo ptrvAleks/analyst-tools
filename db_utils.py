@@ -39,8 +39,8 @@ def run_db_tool():
                     st.warning("Выбери хотя бы одно поле для SELECT")
                 else:
                     fields_str = ", ".join(selected_fields)
-                    # Экранируем значение, если нужно
-                    value_str = f"'{search_value}'" if search_by == "u.league_guid" else search_value
+                    # Экранируем значение
+                    value_str = f"'{search_value}'"
 
                     sql_query = f"""
     SELECT {fields_str}
