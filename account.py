@@ -5,6 +5,13 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 import datetime
+from streamlit_cookies_manager import EncryptedCookieManager
+
+# Настройка менеджера cookies
+cookies = EncryptedCookieManager(password=st.secrets["cookies"]["password"])
+if not cookies.ready():
+    st.stop()
+
 
 
 FIREBASE_URL = "https://analyst-tools-65fbf-default-rtdb.europe-west1.firebasedatabase.app/"
@@ -59,16 +66,12 @@ def show_login():
         # Кнопка внутри формы
         submit = st.form_submit_button("Войти")
 
-        if submit:
-            # здесь username и password уже подхватят заполненное браузером значение
-
-            if login_user(username, password):
-                st.session_state.authenticated = True
-                st.session_state.username = username
-                # Куки на 7 дней
-                expires = datetime.datetime.now() + datetime.timedelta(days=7)
-                st.set_cookie("username", username, expires=expires)
-                st.set_cookie("auth", "true", expires=expires)
-                st.rerun()
-            else:
-                st.error("Неверные учетные данные.")
+        if submit and login_user(username, password):
+            st.session_state.authenticated = True
+            st.session_state.username = username
+            # Cookies на 7 дней
+            cookies.set("username", username)
+            cookies.set("auth", "true")
+            st.rerun()
+        elif submit:
+            st.error("Неверные данные")
