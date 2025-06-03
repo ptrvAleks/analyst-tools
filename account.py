@@ -1,7 +1,6 @@
 # account.py
 import streamlit as st
 import hashlib
-import requests
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
