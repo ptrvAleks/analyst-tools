@@ -14,8 +14,8 @@ def main():
     if choice == "Проверка JSON":
         run_json_tool()
     elif choice == "Работа с БД":
-        # Подпункты
-        db_action = st.sidebar.radio("Выберите действие с БД:", ["Просмотр", "Добавление", "Удаление"])
+        with st.sidebar.expander("Действия с БД", expanded=True):
+            db_action = st.radio("Выберите действие:", ["Просмотр", "Добавление", "Удаление"], key="db_action")
 
         if db_action == "Просмотр":
             run_db_view()
