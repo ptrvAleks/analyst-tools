@@ -14,6 +14,14 @@ def run_db_tool():
             "Лига гуид пользователя",
             key="league_guid"
         )
+
+        # Список доступных полей
+        va_fields = ["va.id", "va.user_id", "va.rev", "va.start_date", "va.end_date", "va.vacation_type", "va.vacation_status"]
+        r_fields = ["r.rev", "r.timestamp", "r.creator"]
+
+        selected_va_fields = st.multiselect("Поля из vacation_aud (va):", va_fields, default=va_fields)
+        selected_r_fields = st.multiselect("Поля из revinfo (r):", r_fields, default=r_fields)
+
         make_sql_btn = st.button("Сформировать SQL")
 
         if make_sql_btn:
@@ -22,5 +30,16 @@ def run_db_tool():
             elif not is_valid_guid(league_guid):
                 st.error("Некорректный формат GUID")
             else:
-                sql_query = f"SELECT va.*, r.* FROM users u JOIN vacation_aud va on va.user_id = u.id JOIN revinfo r on va.rev = r.rev WHERE u.league_guid = '{league_guid}'"
-                st.code(sql_query, language='sql')
+                selected_fields = selected_va_fields + selected_r_fields
+                if not selected_fields:
+                    st.warning("Выбери хотя бы одно поле для SELECT")
+                else:
+                    fields_str = ", ".join(selected_fields)
+                    sql_query = f"""
+    SELECT {fields_str}
+    FROM users u
+    JOIN vacation_aud va ON va.user_id = u.id
+    JOIN revinfo r ON va.rev = r.rev
+    WHERE u.league_guid = '{league_guid}'
+    """.strip()
+                    st.code(sql_query, language='sql')
