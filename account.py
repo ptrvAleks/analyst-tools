@@ -41,20 +41,25 @@ def login_user(username, password):
 def show_login():
     st.title("Авторизация")
 
-    choice = st.selectbox("Выберите действие", ["Вход"])
-    username = st.text_input("Имя пользователя", key="login_username", autocomplete="username")
-    password = st.text_input("Пароль", type="password", key="password", autocomplete="current-password")
+    # Оборачиваем поля в форму с id="login_form"
+    with st.form(key="login_form"):
+        # Streamlit >=1.18: можем задать autocomplete="username"
+        username = st.text_input(
+            "Имя пользователя",
+            key="login_username",
+            autocomplete="username"
+        )
+        password = st.text_input(
+            "Пароль",
+            type="password",
+            key="password",
+            autocomplete="current-password"
+        )
+        # Кнопка внутри формы
+        submit = st.form_submit_button("Войти")
 
-    if choice == "Регистрация":
-        if st.button("Зарегистрироваться"):
-            if user_exists(username):
-                st.error("Пользователь уже существует.")
-            elif register_user(username, password):
-                st.success("Пользователь зарегистрирован.")
-            else:
-                st.error("Ошибка регистрации.")
-    else:
-        if st.button("Войти"):
+        if submit:
+            # здесь username и password уже подхватят заполненное браузером значение
             if login_user(username, password):
                 st.session_state.authenticated = True
                 st.session_state.username = username
