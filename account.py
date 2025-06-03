@@ -4,6 +4,8 @@ import hashlib
 import requests
 import firebase_admin
 from firebase_admin import credentials
+from firebase_admin import db
+
 
 FIREBASE_URL = "https://analyst-tools-65fbf-default-rtdb.europe-west1.firebasedatabase.app/"
 firebase_info = st.secrets["firebase"]
@@ -20,19 +22,20 @@ def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
 def user_exists(username):
-    response = requests.get(f"{FIREBASE_URL}/users/{username}.json")
-    return response.status_code == 200 and response.json() is not None
+    ref = db.reference(f"users/{username}")
+    return ref.get() is not None
 
 def register_user(username, password):
     hashed = hash_password(password)
-    data = {"password": hashed}
-    response = requests.put(f"{FIREBASE_URL}/users/{username}.json", json=data)
-    return response.status_code == 200
+    ref = db.reference(f"users/{username}")
+    ref.set({"password": hashed})
+    return True
 
 def login_user(username, password):
-    response = requests.get(f"{FIREBASE_URL}/users/{username}.json")
-    if response.status_code == 200 and response.json():
-        stored_hash = response.json().get("password")
+    ref = db.reference(f"users/{username}")
+    user_data = ref.get()
+    if user_data:
+        stored_hash = user_data.get("password")
         return stored_hash == hash_password(password)
     return False
 
