@@ -9,7 +9,7 @@ def main():
         st.stop()
 
     st.sidebar.title("Навигация")
-    choice = st.sidebar.selectbox("Выберите инструмент:", ["Проверка JSON", "Работа с БД"])
+    choice = st.sidebar.selectbox("Выберите инструмент:", ["Проверка JSON", "Работа с БД"], disabled=True)
 
     if choice == "Проверка JSON":
         run_json_tool()
