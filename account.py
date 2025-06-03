@@ -4,6 +4,7 @@ import hashlib
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
+import datetime
 
 
 FIREBASE_URL = "https://analyst-tools-65fbf-default-rtdb.europe-west1.firebasedatabase.app/"
@@ -60,9 +61,14 @@ def show_login():
 
         if submit:
             # здесь username и password уже подхватят заполненное браузером значение
+
             if login_user(username, password):
                 st.session_state.authenticated = True
                 st.session_state.username = username
+                # Куки на 7 дней
+                expires = datetime.datetime.now() + datetime.timedelta(days=7)
+                st.set_cookie("username", username, expires=expires)
+                st.set_cookie("auth", "true", expires=expires)
                 st.rerun()
             else:
                 st.error("Неверные учетные данные.")
