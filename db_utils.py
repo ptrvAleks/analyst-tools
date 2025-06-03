@@ -25,3 +25,8 @@ def get_db_session():
 def run_db_tool():
     st.header("Работа с БД (пока заглушка)")
     st.info("Здесь позже будет функционал для взаимодействия с вашей базой данных.")
+    league_guid = st.text_input(
+        "Лига гуид пользователя",
+        key="league_guid"
+    )
+    makeSQL_btn = st.button("Сформировать SQL")
