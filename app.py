@@ -26,8 +26,9 @@ def main():
             if st.button("Выйти"):
                 st.session_state.authenticated = False
                 st.session_state.username = None
-                cookies.delete("username")
-                cookies.delete("auth")
+                cookies["username"] = ""
+                cookies["auth"] = ""
+                cookies.save()
                 st.rerun()
             st.sidebar.title("Навигация")
             choice = st.sidebar.selectbox("Выберите инструмент:", ["Проверка JSON", "Работа с БД"])
