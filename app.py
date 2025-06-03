@@ -19,7 +19,7 @@ def main():
             st.session_state.authenticated = False
     # Проверка, залогинен ли пользователь
     if not st.session_state.get("authenticated"):
-        show_login()
+        show_login(cookies)
     else:
         with st.sidebar:
             # Кнопка выхода

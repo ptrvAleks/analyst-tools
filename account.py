@@ -5,7 +5,6 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 import datetime
-from app import cookies
 
 FIREBASE_URL = "https://analyst-tools-65fbf-default-rtdb.europe-west1.firebasedatabase.app/"
 firebase_info = st.secrets["firebase"]
