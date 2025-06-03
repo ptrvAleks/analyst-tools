@@ -18,7 +18,7 @@ def main():
             db_action = st.radio("Выберите действие:", ["Просмотр", "Добавление", "Удаление"], key="db_action")
 
         if db_action == "Просмотр":
-            run_db_view()
+            run_db_tool()
         elif db_action == "Добавление":
             run_db_add()
         elif db_action == "Удаление":
