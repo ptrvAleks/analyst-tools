@@ -42,8 +42,8 @@ def show_login():
     st.title("Авторизация")
 
     choice = st.selectbox("Выберите действие", ["Вход"])
-    username = st.text_input("Имя пользователя", key="login_username")
-    password = st.text_input("Пароль", type="password", key="password")
+    username = st.text_input("Имя пользователя", key="login_username", autocomplete="username")
+    password = st.text_input("Пароль", type="password", key="password", autocomplete="current-password")
 
     if choice == "Регистрация":
         if st.button("Зарегистрироваться"):
