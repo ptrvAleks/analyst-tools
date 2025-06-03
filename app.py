@@ -4,14 +4,17 @@ from json_utils import run_json_tool
 from db_utils import run_db_tool
 
 def main():
-    if not st.session_state.get("authenticated", False):
+    # Проверка, залогинен ли пользователь
+    if not st.session_state.get("authenticated"):
         show_login()
-        st.stop()
+    else:
+        st.write(f"Добро пожаловать, {st.session_state.get('username')}!")
+
         # Кнопка выхода
-    if st.button("Выйти"):
-        st.session_state.authenticated = False
-        st.session_state.username = None
-        st.rerun()
+        if st.button("Выйти"):
+            st.session_state.authenticated = False
+            st.session_state.username = None
+            st.rerun()
 
     st.sidebar.title("Навигация")
     choice = st.sidebar.selectbox("Выберите инструмент:", ["Проверка JSON", "Работа с БД"])
