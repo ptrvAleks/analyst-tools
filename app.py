@@ -23,7 +23,7 @@ def run_json_tool():
             parsed_json = result["data"]
             count = count_root_objects(json_text)
 
-            st.success("JSON корректен ✅")
+            st.success("✅ JSON корректен")
             st.info(f"Количество объектов на верхнем уровне: {count}")
 
             st.subheader("Форматированный JSON:")
@@ -32,21 +32,30 @@ def run_json_tool():
             st.error("❌ Ошибка в JSON:")
             st.code(result["error"], language="plaintext")
 
-            # Попробуем найти номер строки ошибки (если есть)
+            # Попытка извлечь строку ошибки
             import re
-            match = re.search(r'line (\d+)', result["error"])
+            match = re.search(r'строка (\d+)', result["error"])
             if match:
                 line_num = int(match.group(1))
-                st.warning(f"Ошибка находится примерно на строке: {line_num}")
+                st.warning(f"Ошибка находится на строке: {line_num}")
 
-                # Подсветим эту строку вручную
                 lines = json_text.splitlines()
-                numbered_lines = [
-                    f"{i+1:>3}: {line}" if (i+1) != line_num else f"{i+1:>3}: 👉 {line}"
-                    for i, line in enumerate(lines)
-                ]
-                st.subheader("Текст с нумерацией строк:")
-                st.code("\n".join(numbered_lines), language="json")
+                start = max(0, line_num - 5)
+                end = min(len(lines), line_num + 4)
+
+                snippet = []
+                for i in range(start, end):
+                    line_prefix = f"{i+1:>4}: "
+                    if i + 1 == line_num:
+                        # Подсветка строки с ошибкой
+                        snippet.append(f"{line_prefix}👉 {lines[i]}")
+                    else:
+                        snippet.append(f"{line_prefix}   {lines[i]}")
+
+                st.subheader("Контекст ошибки (±4 строки):")
+                st.code("\n".join(snippet), language="json")
+            else:
+                st.info("Не удалось определить строку с ошибкой.")
 
 def run_db_tool():
     st.header("Работа с БД (пока заглушка)")
