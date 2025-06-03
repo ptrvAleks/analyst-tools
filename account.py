@@ -12,8 +12,6 @@ cookies = EncryptedCookieManager(password=st.secrets["cookies"]["password"])
 if not cookies.ready():
     st.stop()
 
-
-
 FIREBASE_URL = "https://analyst-tools-65fbf-default-rtdb.europe-west1.firebasedatabase.app/"
 firebase_info = st.secrets["firebase"]
 cred_dict = dict(firebase_info)
@@ -69,9 +67,12 @@ def show_login():
         if submit and login_user(username, password):
             st.session_state.authenticated = True
             st.session_state.username = username
-            # Cookies на 7 дней
-            cookies.set("username", username)
-            cookies.set("auth", "true")
+
+            # Установка cookies на 7 дней
+            expires = datetime.datetime.now() + datetime.timedelta(days=7)
+            cookies["username"] = {"value": username, "expires": expires}
+            cookies["auth"] = {"value": "true", "expires": expires}
+            cookies.save()
             st.rerun()
         elif submit:
             st.error("Неверные данные")
