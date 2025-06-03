@@ -14,7 +14,15 @@ def main():
     if choice == "Проверка JSON":
         run_json_tool()
     elif choice == "Работа с БД":
-        run_db_tool()
+        # Подпункты
+        db_action = st.sidebar.radio("Выберите действие с БД:", ["Просмотр", "Добавление", "Удаление"])
+
+        if db_action == "Просмотр":
+            run_db_view()
+        elif db_action == "Добавление":
+            run_db_add()
+        elif db_action == "Удаление":
+            run_db_delete()
 
 if __name__ == "__main__":
     main()
