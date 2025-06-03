@@ -23,13 +23,30 @@ def run_json_tool():
             parsed_json = result["data"]
             count = count_root_objects(json_text)
 
-            st.success(f"JSON корректен ✅")
+            st.success("JSON корректен ✅")
             st.info(f"Количество объектов на верхнем уровне: {count}")
 
             st.subheader("Форматированный JSON:")
             st.json(parsed_json)
         else:
-            st.error(f"❌ Ошибка: {result['error']}")
+            st.error("❌ Ошибка в JSON:")
+            st.code(result["error"], language="plaintext")
+
+            # Попробуем найти номер строки ошибки (если есть)
+            import re
+            match = re.search(r'line (\d+)', result["error"])
+            if match:
+                line_num = int(match.group(1))
+                st.warning(f"Ошибка находится примерно на строке: {line_num}")
+
+                # Подсветим эту строку вручную
+                lines = json_text.splitlines()
+                numbered_lines = [
+                    f"{i+1:>3}: {line}" if (i+1) != line_num else f"{i+1:>3}: 👉 {line}"
+                    for i, line in enumerate(lines)
+                ]
+                st.subheader("Текст с нумерацией строк:")
+                st.code("\n".join(numbered_lines), language="json")
 
 def run_db_tool():
     st.header("Работа с БД (пока заглушка)")
