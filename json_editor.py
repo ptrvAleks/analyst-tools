@@ -1,7 +1,6 @@
 import streamlit as st
 import json
 import codecs
-import streamlit.components.v1 as components
 
 st.set_page_config(page_title="Streamlit JSON Validator",layout='wide')
 
