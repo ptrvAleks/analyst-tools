@@ -1,12 +1,7 @@
 import streamlit as st
 from account import show_login
 from json_utils import run_json_tool
-
-
-
-def run_db_tool():
-    st.header("Работа с БД (пока заглушка)")
-    st.info("Здесь позже будет функционал для взаимодействия с вашей базой данных.")
+from db_utils import run_db_tool
 
 def main():
     if not st.session_state.get("authenticated", False):
