@@ -5,9 +5,8 @@ import codecs
 import json
 # from db_utils import get_db_session
 
-st.set_page_config(page_title="Streamlit JSON Validator", layout='wide')
-
 def run_json_tool():
+    st.set_page_config(page_title="Streamlit JSON Validator", layout='wide')
 
     if "input_json" not in st.session_state:
         st.session_state.input_json = '[\n\t{\n\n\t}\n]'
