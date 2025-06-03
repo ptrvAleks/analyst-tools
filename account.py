@@ -5,12 +5,6 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 import datetime
-from streamlit_cookies_manager import EncryptedCookieManager
-
-# Настройка менеджера cookies
-cookies = EncryptedCookieManager(password=st.secrets["cookies"]["password"])
-if not cookies.ready():
-    st.stop()
 
 FIREBASE_URL = "https://analyst-tools-65fbf-default-rtdb.europe-west1.firebasedatabase.app/"
 firebase_info = st.secrets["firebase"]
@@ -44,7 +38,7 @@ def login_user(username, password):
         return stored_hash == hash_password(password)
     return False
 
-def show_login():
+def show_login(cookies):
     st.title("Авторизация")
 
     # Оборачиваем поля в форму с id="login_form"
