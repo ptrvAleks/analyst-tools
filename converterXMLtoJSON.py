@@ -63,9 +63,8 @@ def run_converter():
         fmt = detect_format(input_text)
         try:
             if fmt == "json":
-                validate_json(input_text)
                 resultOfValidate = validate_json(input_text)
-                if resultOfValidate != ["ok"]:
+                if not resultOfValidate["ok"]:
                     display_json_result(resultOfValidate, input_text)
                 else:
                     result = convert_json_to_xml(input_text, wrap_root=wrap, item_name=item_name)
