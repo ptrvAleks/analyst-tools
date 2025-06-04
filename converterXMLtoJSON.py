@@ -2,6 +2,7 @@ import json
 import xmltodict
 import streamlit as st
 from json_utils import validate_json, display_json_result
+import xml.etree.ElementTree as ET
 
 def detect_format(text: str) -> str:
     """Определяет формат: JSON или XML"""
@@ -71,9 +72,13 @@ def run_converter():
                     st.success("Результат (XML):")
                     st.code(result, language="xml")
             elif fmt == "xml":
-                result = convert_xml_to_json(input_text)
-                st.success("Результат (JSON):")
-                st.code(result, language="json")
+                try:
+                    ET.fromstring(input_text)  # Проверка валидности XML
+                    result = convert_xml_to_json(input_text)
+                    st.success("Результат (JSON):")
+                    st.code(result, language="json")
+                except ET.ParseError as e:
+                    st.error(f"Ошибка в XML: {e}")
             else:
                 st.error("Не удалось определить формат. Введите корректный JSON или XML.")
         except Exception as e:
