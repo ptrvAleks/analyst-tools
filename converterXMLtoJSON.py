@@ -5,22 +5,16 @@ from json_utils import validate_json, display_json_result
 import xml.etree.ElementTree as ET
 
 def detect_format(text: str) -> str:
-    text = text.strip()
-
+    """Определяет формат: JSON или XML"""
     try:
         json.loads(text)
         return "json"
-    except:
-        pass
-
-    try:
-        import xml.etree.ElementTree as ET
-        ET.fromstring(text)
-        return "xml"
-    except:
-        pass
-
-    return "unknown"
+    except json.JSONDecodeError:
+        try:
+            xmltodict.parse(f"<root>{text}</root>")
+            return "xml"
+        except Exception:
+            return "unknown"
 
 def convert_json_to_xml(json_str: str, wrap_root: bool = True, item_name: str = "item") -> str:
     """Конвертирует JSON в XML, с поддержкой списков верхнего уровня"""
