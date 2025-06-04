@@ -6,15 +6,20 @@ import xml.etree.ElementTree as ET
 
 def detect_format(text: str) -> str:
     """Определяет формат: JSON или XML"""
+
+    json_result = validate_json(text)
+    if json_result["ok"]:
+        return {"format": "json"}
+
+    # Если строка начинается с { или [, возможно, пользователь имел в виду JSON
+    if text.strip().startswith("{") or text.strip().startswith("["):
+        return {"format": "unknown", "error": json_result["error"]}
+
     try:
-        json.loads(text)
-        return "json"
-    except json.JSONDecodeError:
-        try:
-            xmltodict.parse(f"<root>{text}</root>")
-            return "xml"
-        except Exception:
-            return "unknown"
+        xmltodict.parse(f"<root>{text}</root>")
+        return {"format": "xml"}
+    except Exception:
+        return {"format": "unknown", "error": "Не удалось определить формат: не JSON и не XML."}
 
 def convert_json_to_xml(json_str: str, wrap_root: bool = True, item_name: str = "item") -> str:
     """Конвертирует JSON в XML, с поддержкой списков верхнего уровня"""
@@ -63,16 +68,13 @@ def run_converter():
 
         fmt = detect_format(input_text)
         try:
-            if fmt == "json":
-                resultOfValidate = validate_json(input_text)
-                if not resultOfValidate["ok"]:
-                    display_json_result(resultOfValidate, input_text)
-                    return
-
+            if fmt["format"] == "json":
                 result = convert_json_to_xml(input_text, wrap_root=wrap, item_name=item_name)
                 st.success("Результат (XML):")
                 st.code(result, language="xml")
-            elif fmt == "xml":
+            elif fmt["format"] == "unknown":
+                display_json_result(fmt["error"])
+            elif fmt["format"] == "xml":
                 result_json = convert_xml_to_json(input_text)
                 st.success("Результат (JSON):")
                 st.code(result_json, language="json")
