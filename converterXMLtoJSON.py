@@ -39,6 +39,7 @@ def run_converter():
     st.header("🔁 Конвертер JSON ⇄ XML с поддержкой multiple roots")
 
     input_text = st.text_area("Введите JSON или XML:", height=300)
+    wrap = st.checkbox("Оборачивать JSON в <root>", value=True)
 
     if st.button("Конвертировать"):
         if not input_text.strip():
@@ -48,7 +49,7 @@ def run_converter():
         fmt = detect_format(input_text)
         try:
             if fmt == "json":
-                result = convert_json_to_xml(input_text)
+                result = convert_json_to_xml(input_text, wrap_root=wrap)
                 st.success("Результат (XML):")
                 st.code(result, language="xml")
             elif fmt == "xml":
