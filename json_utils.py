@@ -1,11 +1,10 @@
 import json
+import re
 import streamlit as st
 
 def count_root_objects(json_text: str) -> int:
     """
-    Парсит строку json_text и возвращает количество объектов в корне.
-    Если корень — не массив, возвращает 1.
-    Бросает json.JSONDecodeError при неверном формате.
+    Считает количество объектов в корне JSON.
     """
     data = json.loads(json_text)
     return len(data) if isinstance(data, list) else 1
@@ -48,20 +47,14 @@ def run_json_tool():
         result = validate_json(json_text)
 
         if result["ok"]:
-            parsed_json = result["data"]
-            count = count_root_objects(json_text)
-
             st.success("✅ JSON корректен")
-            st.info(f"Количество объектов на верхнем уровне: {count}")
-
+            st.info(f"Количество объектов на верхнем уровне: {result['count']}")
             st.subheader("Форматированный JSON:")
-            st.json(parsed_json)
+            st.json(result["data"])
         else:
             st.error("❌ Ошибка в JSON:")
             st.code(result["error"], language="plaintext")
 
-            # Попытка извлечь строку ошибки
-            import re
             match = re.search(r'строка (\d+)', result["error"])
             if match:
                 line_num = int(match.group(1))
@@ -75,7 +68,6 @@ def run_json_tool():
                 for i in range(start, end):
                     line_prefix = f"{i+1:>4}: "
                     if i + 1 == line_num:
-                        # Подсветка строки с ошибкой
                         snippet.append(f"{line_prefix}👉 {lines[i]}")
                     else:
                         snippet.append(f"{line_prefix}   {lines[i]}")
