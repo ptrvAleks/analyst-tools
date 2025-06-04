@@ -39,8 +39,8 @@ def main():
         elif choice == "Работа с БД":
             with st.sidebar.expander("Действия с БД", expanded=True):
                 db_action = st.radio("Выберите действие:", ["Просмотр",], key="db_action")
-                if db_action == "Просмотр":
-                    run_db_tool()
+            if db_action == "Просмотр":
+                run_db_tool()
         elif choice == "Конвертер":
             run_converter()
 
