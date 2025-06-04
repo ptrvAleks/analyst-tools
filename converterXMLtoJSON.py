@@ -1,6 +1,7 @@
 import json
 import xmltodict
 import streamlit as st
+from json_utils import validate_json
 
 def detect_format(text: str) -> str:
     """Определяет формат: JSON или XML"""
@@ -62,6 +63,7 @@ def run_converter():
         fmt = detect_format(input_text)
         try:
             if fmt == "json":
+                validate_json(input_text)
                 result = convert_json_to_xml(input_text, wrap_root=wrap, item_name=item_name)
                 st.success("Результат (XML):")
                 st.code(result, language="xml")
