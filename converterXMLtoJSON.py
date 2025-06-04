@@ -67,6 +67,7 @@ def run_converter():
                 resultOfValidate = validate_json(input_text)
                 if not resultOfValidate["ok"]:
                     display_json_result(resultOfValidate, input_text)
+                    return
                 else:
                     result = convert_json_to_xml(input_text, wrap_root=wrap, item_name=item_name)
                     st.success("Результат (XML):")
