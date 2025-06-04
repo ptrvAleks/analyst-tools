@@ -9,25 +9,34 @@ def detect_format(text: str) -> str:
         return "json"
     except json.JSONDecodeError:
         try:
-            xmltodict.parse(text)
+            xmltodict.parse(f"<root>{text}</root>")  # оборачиваем для проверки
             return "xml"
         except Exception:
             return "unknown"
 
-def convert_json_to_xml(json_str: str) -> str:
-    """Конвертирует JSON в XML"""
+def convert_json_to_xml(json_str: str, wrap_root: bool = True) -> str:
+    """Конвертирует JSON в XML, с возможностью убрать root"""
     obj = json.loads(json_str)
-    xml_str = xmltodict.unparse({"root": obj}, pretty=True)
+    if wrap_root:
+        obj = {"root": obj}
+    xml_str = xmltodict.unparse(obj, pretty=True)
+    if not wrap_root:
+        # удаляем первую и последнюю строку <root>...</root>
+        lines = xml_str.strip().splitlines()
+        xml_str = "\n".join(lines[1:-1])
     return xml_str
 
 def convert_xml_to_json(xml_str: str) -> str:
-    """Конвертирует XML в JSON"""
-    obj = xmltodict.parse(xml_str)
-    json_str = json.dumps(obj.get("root", obj), indent=2, ensure_ascii=False)
-    return json_str
+    """Конвертирует XML в JSON, поддерживая multiple roots"""
+    wrapped = f"<root>{xml_str}</root>"
+    obj = xmltodict.parse(wrapped)
+    root = obj["root"]
+    # если корень — список однотипных элементов
+    result = root if isinstance(root, (list, dict)) else {"root": root}
+    return json.dumps(result, indent=2, ensure_ascii=False)
 
 def run_converter():
-    st.header("🔁 Конвертер JSON ⇄ XML")
+    st.header("🔁 Конвертер JSON ⇄ XML с поддержкой multiple roots")
 
     input_text = st.text_area("Введите JSON или XML:", height=300)
 
