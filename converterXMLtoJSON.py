@@ -18,6 +18,9 @@ def convert_json_to_xml(json_str: str, wrap_root: bool = True, item_name: str = 
     """Конвертирует JSON в XML, с поддержкой списков верхнего уровня"""
     obj = json.loads(json_str)
 
+    if not item_name:
+        item_name = "item"
+
     # если верхний уровень — список, оборачиваем
     if isinstance(obj, list):
         obj = {item_name: obj}
