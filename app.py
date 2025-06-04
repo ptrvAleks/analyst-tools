@@ -3,6 +3,7 @@ from account import show_login
 from json_utils import run_json_tool
 from db_utils import run_db_tool
 from streamlit_cookies_manager import EncryptedCookieManager
+from converterXMLtoJSON import run_converter
 
 cookies = EncryptedCookieManager(password=st.secrets["cookies"]["password"])
 if not cookies.ready():
@@ -31,20 +32,19 @@ def main():
                 cookies.save()
                 st.rerun()
             st.sidebar.title("Навигация")
-            choice = st.sidebar.selectbox("Выберите инструмент:", ["Проверка JSON", "Работа с БД"])
+            choice = st.sidebar.selectbox("Выберите инструмент:", ["Проверка JSON", "Конвертер", "Работа с БД"])
 
         if choice == "Проверка JSON":
             run_json_tool()
         elif choice == "Работа с БД":
             with st.sidebar.expander("Действия с БД", expanded=True):
-                db_action = st.radio("Выберите действие:", ["Просмотр", "Добавление", "Удаление"], key="db_action")
+                db_action = st.radio("Выберите действие:", ["Просмотр",], key="db_action")
+                if db_action == "Просмотр":
+                    run_db_tool()
+        elif choice == "Конвертер":
+            run_converter()
 
-            if db_action == "Просмотр":
-                run_db_tool()
-            elif db_action == "Добавление":
-                run_db_add()
-            elif db_action == "Удаление":
-                run_db_delete()
+
 
 if __name__ == "__main__":
     main()
