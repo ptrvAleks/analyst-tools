@@ -5,16 +5,24 @@ from json_utils import validate_json, display_json_result
 import xml.etree.ElementTree as ET
 
 def detect_format(text: str) -> str:
-    """Определяет формат: JSON или XML"""
+    text = text.strip()
+
+    # Попытка распарсить как JSON
     try:
         json.loads(text)
         return "json"
-    except json.JSONDecodeError:
-        try:
-            xmltodict.parse(f"<root>{text}</root>")
-            return "xml"
-        except Exception:
-            return "unknown"
+    except:
+        pass
+
+    # Попытка распарсить как XML
+    try:
+        import xml.etree.ElementTree as ET
+        ET.fromstring(text)
+        return "xml"
+    except:
+        pass
+
+    return "unknown"
 
 def convert_json_to_xml(json_str: str, wrap_root: bool = True, item_name: str = "item") -> str:
     """Конвертирует JSON в XML, с поддержкой списков верхнего уровня"""
@@ -68,18 +76,14 @@ def run_converter():
                 if not resultOfValidate["ok"]:
                     display_json_result(resultOfValidate, input_text)
                     return
-                else:
-                    result = convert_json_to_xml(input_text, wrap_root=wrap, item_name=item_name)
-                    st.success("Результат (XML):")
-                    st.code(result, language="xml")
+
+                result = convert_json_to_xml(input_text, wrap_root=wrap, item_name=item_name)
+                st.success("Результат (XML):")
+                st.code(result, language="xml")
             elif fmt == "xml":
-                try:
-                    ET.fromstring(input_text)  # Проверка валидности XML
-                    result = convert_xml_to_json(input_text)
-                    st.success("Результат (JSON):")
-                    st.code(result, language="json")
-                except ET.ParseError as e:
-                    st.error(f"Ошибка в XML: {e}")
+                result_json = convert_xml_to_json(input_text)
+                st.success("Результат (JSON):")
+                st.code(result_json, language="json")
             else:
                 st.error("Не удалось определить формат. Введите корректный JSON или XML.")
         except Exception as e:
