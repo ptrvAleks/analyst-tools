@@ -7,14 +7,12 @@ import xml.etree.ElementTree as ET
 def detect_format(text: str) -> str:
     text = text.strip()
 
-    # Попытка распарсить как JSON
     try:
         json.loads(text)
         return "json"
     except:
         pass
 
-    # Попытка распарсить как XML
     try:
         import xml.etree.ElementTree as ET
         ET.fromstring(text)
