@@ -46,7 +46,7 @@ def convert_xml_to_json(xml_str: str) -> str:
     return json.dumps(root, indent=2, ensure_ascii=False)
 
 def run_converter():
-    st.header("🔁 Конвертер JSON ⇄ XML (универсальный)")
+    st.header("🔁 Конвертер JSON ⇄ XML")
 
     input_text = st.text_area("Введите JSON или XML:", height=300)
 
