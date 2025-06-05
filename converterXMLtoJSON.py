@@ -2,7 +2,6 @@ import json
 import xmltodict
 import streamlit as st
 from json_utils import validate_json, display_json_result
-import xml.etree.ElementTree as ET
 
 
 def detect_format(text: str) -> dict:
