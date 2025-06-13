@@ -32,24 +32,31 @@ def detect_format(text: str) -> dict:
     except Exception:
         return {"format": "unknown"}
 
-def convert_json_to_xml(json_str: str, wrap_root: bool = True, item_name: str = "item") -> str:
-    """Конвертирует JSON в XML, с поддержкой списков верхнего уровня"""
+def convert_json_to_xml(json_str: str, item_name: str = "item") -> str:
     obj = json.loads(json_str)
 
     if not item_name:
         item_name = "item"
 
-    # если верхний уровень — список, оборачиваем
+    # Если верхний уровень — список, оборачиваем в item_name
     if isinstance(obj, list):
         obj = {item_name: obj}
+        need_wrap_root = True  # список → несколько элементов → нужен корень
 
-    if wrap_root:
+    elif isinstance(obj, dict):
+        # Если у словаря более одного ключа, то для корректного XML нужен корень
+        need_wrap_root = len(obj) != 1
+    else:
+        # Для других типов (строка, число и т.п.) — оборачиваем в корень
+        need_wrap_root = True
+
+    if need_wrap_root:
         obj = {"root": obj}
 
     xml_str = xmltodict.unparse(obj, pretty=True)
 
-    if not wrap_root:
-        # удаляем <root> и </root>
+    if not need_wrap_root:
+        # Убираем корневой тег <root> (так как оборачивали по необходимости, а тут его не хотим)
         lines = xml_str.strip().splitlines()
         xml_str = "\n".join(lines[1:-1])
 
@@ -102,7 +109,6 @@ def run_converter():
     input_text = st.text_area("Введите JSON или XML:", height=300)
 
     st.markdown("### ⚙️ Настройки")
-    wrap = st.checkbox("Оборачивать в `<root>` (для XML)", value=True)
     item_name = st.text_input("Имя узла для массива JSON → XML", value="item")
 
     if st.button("Конвертировать"):
@@ -113,7 +119,7 @@ def run_converter():
         fmt = detect_format(input_text)
         try:
             if fmt["format"] == "json":
-                result = convert_json_to_xml(input_text, wrap_root=wrap, item_name=item_name)
+                result = convert_json_to_xml(input_text, item_name=item_name)
                 st.success("Результат (XML):")
                 st.code(result, language="xml")
             elif fmt["format"] == "invalid_json":
