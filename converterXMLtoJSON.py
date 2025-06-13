@@ -7,12 +7,6 @@ from json_utils import validate_json, display_json_result
 def detect_format(text: str) -> dict:
     """
     Определяет формат текста: json, invalid_json, xml или unknown.
-
-    Возвращает:
-      {'format': 'json'}
-      {'format': 'invalid_json', 'error': <описание ошибки>}
-      {'format': 'xml'}
-      {'format': 'unknown'}
     """
     json_result = validate_json(text)
     if json_result["ok"]:
@@ -55,11 +49,19 @@ def convert_json_to_xml(json_str: str, wrap_root: bool = True, item_name: str = 
 
 def convert_xml_to_json(xml_str: str) -> str:
     """Конвертирует XML в JSON, поддерживая multiple roots"""
-    wrapped = f"<root>{xml_str}</root>"
-    obj = xmltodict.parse(wrapped)
-    root = obj.get("root", {})
+    xml_str = xml_str.splitlines()
 
-    return json.dumps(root, indent=2, ensure_ascii=False)
+    filtered_str = [
+        line for line in xml_str
+        if line.strip() != '<?xml version="1.0" encoding="utf-8"?>'
+    ]
+
+    processed_text = '\n'.join(filtered_str)
+
+    wrapped = f"<root>{processed_text}</root>"
+    obj = xmltodict.parse(wrapped)
+
+    return json.dumps(obj, indent=2, ensure_ascii=False)
 
 def run_converter():
     st.header("🔁 Конвертер JSON ⇄ XML")
