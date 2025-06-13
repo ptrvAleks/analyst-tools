@@ -55,25 +55,28 @@ def convert_json_to_xml(json_str: str, wrap_root: bool = True, item_name: str = 
     return xml_str
 
 def convert_xml_to_json(xml_str: str) -> str:
-    """Конвертирует XML в JSON, поддерживая multiple roots"""
+    """
+    Конвертирует XML в JSON без обёртки root/item.
+    """
+    import xmltodict
+    import json
 
-    # Удаляем строку с XML-декларацией
+    # Удаляем XML-декларацию
     lines = xml_str.splitlines()
     filtered_lines = [
         line for line in lines
-        if not line.strip().startswith('<?xml')  # Более универсально
+        if not line.strip().startswith('<?xml')
     ]
-
     processed_text = '\n'.join(filtered_lines)
 
-    # Оборачиваем содержимое в единый корень
+    # Оборачиваем в root (иначе нельзя парсить множественные корни)
     wrapped = f"<root>{processed_text}</root>"
-
-    # Преобразуем в словарь
     obj = xmltodict.parse(wrapped)
 
-    # Возвращаем JSON
-    return json.dumps(obj, indent=2, ensure_ascii=False)
+    # Достаём содержимое root
+    root_content = obj.get("root")
+
+    return json.dumps(root_content, indent=2, ensure_ascii=False)
 
 def run_converter():
     st.header("🔁 Конвертер JSON ⇄ XML")
