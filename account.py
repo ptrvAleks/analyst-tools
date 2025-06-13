@@ -7,15 +7,24 @@ from firebase_admin import db
 import datetime
 
 FIREBASE_URL = "https://analyst-tools-65fbf-default-rtdb.europe-west1.firebasedatabase.app/"
-firebase_info = st.secrets["firebase"]
-cred_dict = dict(firebase_info)
-cred = credentials.Certificate(cred_dict)
 
-# Не даём инициализировать второй раз
-if not firebase_admin._apps:
-    firebase_admin.initialize_app(cred, {
-        'databaseURL': f'{FIREBASE_URL}'
-    })
+# ✅ Новый способ кэширования — как ресурс
+@st.cache_resource
+def init_firebase():
+    cred_dict = dict(st.secrets["firebase"])
+    cred = credentials.Certificate(cred_dict)
+
+    # Не даём инициализировать второй раз
+    if not firebase_admin._apps:
+        return firebase_admin.initialize_app(cred, {
+            'databaseURL': FIREBASE_URL
+        })
+    else:
+        return firebase_admin.get_app()
+
+# ⚙️ Инициализация один раз при запуске
+init_firebase()
+
 
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
@@ -41,9 +50,7 @@ def login_user(username, password):
 def show_login(cookies):
     st.title("Авторизация")
 
-    # Оборачиваем поля в форму с id="login_form"
     with st.form(key="login_form"):
-        # Streamlit >=1.18: можем задать autocomplete="username"
         username = st.text_input(
             "Имя пользователя",
             key="login_username",
@@ -55,16 +62,15 @@ def show_login(cookies):
             key="password",
             autocomplete="current-password"
         )
-        # Кнопка внутри формы
         submit = st.form_submit_button("Войти")
 
         if submit and login_user(username, password):
             st.session_state.authenticated = True
             st.session_state.username = username
 
-            # Установка cookies на 7 дней
+            # Куки на 7 дней
             expires = datetime.datetime.now() + datetime.timedelta(days=7)
-            cookies["username"] = username  # просто строка
+            cookies["username"] = username
             cookies["auth"] = "true"
             cookies.save()
             st.rerun()
