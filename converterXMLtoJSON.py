@@ -49,18 +49,23 @@ def convert_json_to_xml(json_str: str, wrap_root: bool = True, item_name: str = 
 
 def convert_xml_to_json(xml_str: str) -> str:
     """Конвертирует XML в JSON, поддерживая multiple roots"""
-    xml_str = xml_str.splitlines()
 
-    filtered_str = [
-        line for line in xml_str
-        if line.strip() != '<?xml version="1.0" encoding="utf-8"?>'
+    # Удаляем строку с XML-декларацией
+    lines = xml_str.splitlines()
+    filtered_lines = [
+        line for line in lines
+        if not line.strip().startswith('<?xml')  # Более универсально
     ]
 
-    processed_text = '\n'.join(filtered_str)
+    processed_text = '\n'.join(filtered_lines)
 
+    # Оборачиваем содержимое в единый корень
     wrapped = f"<root>{processed_text}</root>"
+
+    # Преобразуем в словарь
     obj = xmltodict.parse(wrapped)
 
+    # Возвращаем JSON
     return json.dumps(obj, indent=2, ensure_ascii=False)
 
 def run_converter():
