@@ -8,6 +8,7 @@ def detect_format(text: str) -> dict:
     """
     Определяет формат текста: json, invalid_json, xml или unknown.
     """
+    # Проверка JSON
     json_result = validate_json(text)
     if json_result["ok"]:
         return {"format": "json"}
@@ -18,8 +19,14 @@ def detect_format(text: str) -> dict:
             "error": json_result["error"]
         }
 
+    # Удаляем XML-декларацию
+    cleaned_text = "\n".join(
+        line for line in text.splitlines()
+        if not line.strip().startswith("<?xml")
+    )
+
     try:
-        xmltodict.parse(f"<root>{text}</root>")
+        xmltodict.parse(cleaned_text)
         return {"format": "xml"}
     except Exception:
         return {"format": "unknown"}
