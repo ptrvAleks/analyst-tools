@@ -2,6 +2,7 @@ import json
 import xmltodict
 import streamlit as st
 from json_utils import validate_json, display_json_result
+from typing import Any
 
 
 def detect_format(text: str) -> dict:
@@ -54,29 +55,46 @@ def convert_json_to_xml(json_str: str, wrap_root: bool = True, item_name: str = 
 
     return xml_str
 
+def _postprocess(value: Any) -> Any:
+    """Рекурсивно приводит строки '' → None, 'true'/'false' → bool."""
+    if isinstance(value, dict):
+        return {k: _postprocess(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_postprocess(v) for v in value]
+    if value == "":
+        return None
+    if isinstance(value, str) and value.lower() in ("true", "false"):
+        return value.lower() == "true"
+    return value
+
 def convert_xml_to_json(xml_str: str) -> str:
     """
-    Конвертирует XML в JSON без обёртки root/item.
+    Конвертирует XML вида <root><item>…</item>…</root> → JSON‑массив.
+    • Удаляет XML‑декларацию.
+    • Выкидывает обёртки root/item.
+    • Преобразует "" → null, "true"/"false" → bool.
     """
-    import xmltodict
-    import json
+    # 1. убираем строку <?xml …?>
+    cleaned = "\n".join(
+        line for line in xml_str.splitlines()
+        if not line.strip().startswith("<?xml")
+    )
 
-    # Удаляем XML-декларацию
-    lines = xml_str.splitlines()
-    filtered_lines = [
-        line for line in lines
-        if not line.strip().startswith('<?xml')
-    ]
-    processed_text = '\n'.join(filtered_lines)
+    # 2. парсим
+    parsed = xmltodict.parse(cleaned)
 
-    # Оборачиваем в root (иначе нельзя парсить множественные корни)
-    wrapped = f"<root>{processed_text}</root>"
-    obj = xmltodict.parse(wrapped)
+    # 3. достаём список <item>
+    items = parsed.get("root", {}).get("item", [])
 
-    # Достаём содержимое root
-    root_content = obj.get("root")
+    # xmltodict возвращает dict, если item один ― превращаем в список
+    if not isinstance(items, list):
+        items = [items]
 
-    return json.dumps(root_content, indent=2, ensure_ascii=False)
+    # 4. пост‑обработка типов
+    items = _postprocess(items)
+
+    # 5. JSON‑строка
+    return json.dumps(items, indent=2, ensure_ascii=False)
 
 def run_converter():
     st.header("🔁 Конвертер JSON ⇄ XML")
