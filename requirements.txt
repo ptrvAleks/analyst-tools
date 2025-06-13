@@ -1,6 +1,4 @@
 streamlit
-streamlit-authenticator
-sqlalchemy
 firebase_admin
 streamlit-cookies-manager
 xmltodict
