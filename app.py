@@ -1,9 +1,9 @@
 import streamlit as st
 from account import show_login
-from json_utils import run_json_tool
-from db_utils import run_db_tool
+from ui.json_ui import run_json_tool
+from ui.db_ui import run_db_tool
 from streamlit_cookies_manager import EncryptedCookieManager
-from converterXMLtoJSON import run_converter
+from ui.xml_json_converter_ui import run_converter
 
 cookies = EncryptedCookieManager(password=st.secrets["cookies"]["password"])
 if not cookies.ready():

@@ -1,7 +1,6 @@
 import json
 import xmltodict
-import streamlit as st
-from json_utils import validate_json, display_json_result
+from logic.json_utils import validate_json
 from typing import Any
 
 
@@ -103,32 +102,3 @@ def convert_xml_to_json(xml_str: str) -> str:
     # 5. JSON‑строка
     return json.dumps(items, indent=2, ensure_ascii=False)
 
-def run_converter():
-    st.header("🔁 Конвертер JSON ⇄ XML")
-
-    input_text = st.text_area("Введите JSON или XML:", height=300)
-
-    st.markdown("### ⚙️ Настройки")
-    item_name = st.text_input("Имя узла для массива JSON → XML", value="item")
-
-    if st.button("Конвертировать"):
-        if not input_text.strip():
-            st.warning("Поле ввода пустое.")
-            return
-
-        fmt = detect_format(input_text)
-        try:
-            if fmt["format"] == "json":
-                result = convert_json_to_xml(input_text, item_name=item_name)
-                st.success("Результат (XML):")
-                st.code(result, language="xml")
-            elif fmt["format"] == "invalid_json":
-                display_json_result({"ok": False, "error": fmt["error"]}, input_text)
-            elif fmt["format"] == "xml":
-                result_json = convert_xml_to_json(input_text)
-                st.success("Результат (JSON):")
-                st.code(result_json, language="json")
-            else:
-                st.error("Не удалось определить формат. Введите корректный JSON или XML.")
-        except Exception as e:
-            st.error(f"Ошибка при конвертации: {e}")
