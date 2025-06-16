@@ -1,5 +1,6 @@
 import streamlit as st
 from account import show_login
+from ui.json_schema_generator_ui import run_json_schema_generator
 from ui.json_ui import run_json_tool
 from ui.db_ui import run_db_tool
 from streamlit_cookies_manager import EncryptedCookieManager
@@ -35,7 +36,7 @@ def main():
             tool_actions = {
                 "Проверка JSON": run_json_tool,
                 "Конвертер": run_converter,
-                # "JSON-Schema": run_json_schema,
+                "JSON-Schema": run_json_schema_generator(),
             }
             choice = st.sidebar.selectbox("Выберите инструмент:", list(tool_actions.keys()) + ["Работа с БД"])
 
