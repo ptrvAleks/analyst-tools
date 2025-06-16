@@ -18,13 +18,12 @@ def run_json_schema_generator():
         st.session_state.clear()
         st.rerun()
 
-    if check_btn:
-        is_valid, error_msg = validate_json(json_text)
-        display_json_result(is_valid, error_msg, json_text)
+    validation_result = validate_json(json_text)
+    display_json_result(validation_result, json_text)
 
-        if is_valid:
-            with st.spinner("Генерирую схему..."):
-                schema_str = json_to_json_schema(json_text)
+    if validation_result["ok"]:
+        with st.spinner("Генерирую схему..."):
+            schema_str = json_to_json_schema(json_text)
 
-            st.subheader("Сгенерированная JSON Schema")
-            st.code(schema_str, language="json")  # вот тут отображаем в UI
+        st.subheader("Сгенерированная JSON Schema")
+        st.code(schema_str, language="json")
