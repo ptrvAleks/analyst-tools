@@ -2,7 +2,7 @@ import streamlit as st
 from account import show_login
 from ui.json_schema_generator_ui import run_json_schema_generator
 from ui.json_ui import run_json_tool
-from ui.db_ui import run_db_tool
+from ui.db_history_sql_query_ui import run_db_tool
 from streamlit_cookies_manager import EncryptedCookieManager
 from ui.xml_json_converter_ui import run_converter
 

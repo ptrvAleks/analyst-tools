@@ -18,12 +18,15 @@ def run_json_schema_generator():
         st.session_state.clear()
         st.rerun()
 
-    validation_result = validate_json(json_text)
-    display_json_result(validation_result, json_text)
+    if check_btn:
+        validation_result = validate_json(json_text)
+        display_json_result(validation_result, json_text)
 
-    if validation_result["ok"]:
-        with st.spinner("Генерирую схему..."):
-            schema_str = json_to_json_schema(json_text)
+        if validation_result["ok"]:
+            with st.spinner("Генерирую схему..."):
+                schema_str = json_to_json_schema(json_text)
 
-        st.subheader("Сгенерированная JSON Schema")
-        st.code(schema_str, language="json")
+            st.subheader("Сгенерированная JSON Schema")
+            st.code(schema_str, language="json")
+        else:
+            display_json_result(validation_result, json_text)
