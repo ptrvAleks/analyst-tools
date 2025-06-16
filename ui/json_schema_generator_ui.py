@@ -28,5 +28,3 @@ def run_json_schema_generator():
 
             st.subheader("Сгенерированная JSON Schema")
             st.code(schema_str, language="json")
-        else:
-            display_json_result(validation_result, json_text)
