@@ -28,9 +28,9 @@ def display_json_result(result: dict, original_text: str):
                     snippet.append(f"{line_prefix}👉 {lines[i]}")
                 else:
                     snippet.append(f"{line_prefix}   {lines[i]}")
-
-            st.subheader("Контекст ошибки (±4 строки):")
-            st.code("\n".join(snippet), language="json")
+            with st.expander("Отформатированный JSON"):
+                st.subheader("Контекст ошибки (±4 строки):")
+                st.code("\n".join(snippet), language="json")
         else:
             st.info("Не удалось определить строку с ошибкой.")
 
