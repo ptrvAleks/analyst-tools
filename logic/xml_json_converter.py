@@ -71,12 +71,12 @@ def _find_main_array(parsed: Dict[str, Any]) -> List[Any]:
 
     common_paths = [
         ["data"],
+        ["root", "data"],
         ["root", "item"],
         ["items"],
         ["list"],
         ["results"],
     ]
-
     # 1. По избранным путям
     for path in common_paths:
         current: Union[Dict[str, Any], List[Any]] = parsed
@@ -85,11 +85,13 @@ def _find_main_array(parsed: Dict[str, Any]) -> List[Any]:
                 current = current[key]
             else:
                 break           # путь оборвался
-        else:                    # дошли до конца пути
-            # одиночный <item> мог прийти как dict → делаем list
-            return current if isinstance(current, list) else [current]
+        else:  # дошли до конца пути
+            if isinstance(current, list):
+                return current
+            if isinstance(current, dict):
+                return [current]
 
-    # 2. Fallback: первый встретившийся list
+                    # 2. Fallback: первый встретившийся list
     def deep_search(obj: Any) -> List[Any] | None:
         if isinstance(obj, list):
             return obj
