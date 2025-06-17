@@ -8,7 +8,6 @@ import datetime
 
 FIREBASE_URL = "https://analyst-tools-65fbf-default-rtdb.europe-west1.firebasedatabase.app/"
 
-# ✅ Новый способ кэширования — как ресурс
 @st.cache_resource
 def init_firebase():
     cred_dict = dict(st.secrets["firebase"])
