@@ -61,106 +61,51 @@ def convert_json_to_xml(json_str: str, item_name: str = "item") -> str:
 
     return xml_str
 
-
-def _find_main_array(parsed: Dict[str, Any]) -> List[Any]:
+def _postprocess_any(value: Any) -> Any:
     """
-    Возвращает первый список элементов в JSON‑структуре.
-    1) Сначала пробует популярные пути (data, root.item, items…).
-    2) Если не найдено — рекурсивно ищет первый list в дереве.
-    """
-
-    common_paths = [
-        ["data"],
-        ["root", "data"],
-        ["root", "item"],
-        ["items"],
-        ["list"],
-        ["results"],
-    ]
-    # 1. По избранным путям
-    for path in common_paths:
-        current: Union[Dict[str, Any], List[Any]] = parsed
-        for key in path:
-            if isinstance(current, dict) and key in current:
-                current = current[key]
-            else:
-                break           # путь оборвался
-        else:  # дошли до конца пути
-            if isinstance(current, list):
-                return current
-            if isinstance(current, dict):
-                return [current]
-
-                    # 2. Fallback: первый встретившийся list
-    def deep_search(obj: Any) -> List[Any] | None:
-        if isinstance(obj, list):
-            return obj
-        if isinstance(obj, dict):
-            for value in obj.values():
-                found = deep_search(value)
-                if found:
-                    return found
-        return None
-
-    return deep_search(parsed) or []
-
-
-def _postprocess(items: List[Any]) -> List[Any]:
-    """
-    Приводит строки к нужным типам:
+    Универсальное преобразование значений:
       • ""   → None
-      • "true"/"false" (регистронезависимо) → bool
-      • такие строки, похожие на UUID или ISO‑дату, оставляет как str (без изменений)
+      • "true"/"false" → bool
+      • UUID / ISO date → оставить строкой
     """
     uuid_re   = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", re.I)
     date_re   = re.compile(r"^\d{4}-\d{2}-\d{2}$")
     iso_dt_re = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}")
 
-    def convert(value: Any) -> Any:
-        if isinstance(value, str):
-            if value == "":
-                return None
-            low = value.lower()
-            if low == "true":
-                return True
-            if low == "false":
-                return False
-            # uuid / date / iso‑datetime оставляем строками
-            if uuid_re.match(value) or date_re.match(value) or iso_dt_re.match(value):
-                return value
-        if isinstance(value, list):
-            return [convert(v) for v in value]
-        if isinstance(value, dict):
-            return {k: convert(v) for k, v in value.items()}
-        return value
+    if isinstance(value, str):
+        if value == "":
+            return None
+        low = value.lower()
+        if low == "true":
+            return True
+        if low == "false":
+            return False
+        if uuid_re.match(value) or date_re.match(value) or iso_dt_re.match(value):
+            return value
+    elif isinstance(value, list):
+        return [_postprocess_any(v) for v in value]
+    elif isinstance(value, dict):
+        return {k: _postprocess_any(v) for k, v in value.items()}
 
-    return [convert(item) for item in items]
+    return value
 
 # ------------------------- main -------------------------
 
 def convert_xml_to_json(xml_str: str) -> str:
     """
-    Конвертирует XML в JSON‑массив.
+    Конвертирует XML в полноценно структурированный JSON.
 
     • Удаляет XML‑декларацию.
-    • Универсально ищет «главный» массив данных (data / root.item / items …).
-    • Преобразует "" → null, "true"/"false" → bool.
+    • Приводит типы значений рекурсивно.
+    • Сохраняет всю структуру (data, meta и др.).
     """
-
-    # 1. Убираем строку <?xml …?>
     cleaned = "\n".join(
         line for line in xml_str.splitlines()
         if not line.strip().startswith("<?xml")
     )
 
-    # 2. Парсим XML → dict
-    parsed = xmltodict.parse(cleaned)
+    parsed_dict = xmltodict.parse(cleaned)
 
-    # 3. Находим нужный список элементов
-    items = _find_main_array(parsed)
+    processed = _postprocess_any(parsed_dict)
 
-    # 4. Приводим типы
-    items = _postprocess(items)
-
-    # 5. Возвращаем красиво отформатированную JSON‑строку
-    return json.dumps(items, indent=2, ensure_ascii=False)
+    return json.dumps(processed, indent=2, ensure_ascii=False)
