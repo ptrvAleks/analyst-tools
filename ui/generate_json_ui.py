@@ -1,12 +1,12 @@
 import streamlit as st
+from logic.generate_json import process_schema
 from logic.json_utils import validate_json
-from logic.json_schema_generator import json_to_json_schema
 from ui.json_ui import display_json_result
 
-def run_json_schema_generator():
-    st.header("Генератор JSON Schema")
+def run_json_generator():
+    st.header("Генератор JSON")
 
-    json_text = st.text_area("Вставьте JSON:", height=250)
+    json_text = st.text_area("Вставьте JSON-схему:", height=250)
 
     col1, col2 = st.columns(2)
     with col1:
@@ -23,8 +23,9 @@ def run_json_schema_generator():
         display_json_result(validation_result, json_text)
 
         if validation_result["ok"]:
-            with st.spinner("Генерирую схему..."):
-                schema_str = json_to_json_schema(json_text)
+            with st.spinner("Генерирую JSON..."):
+                json_str = process_schema(json_text)
 
-            st.subheader("Сгенерированная JSON Schema")
-            st.code(schema_str, language="json")
+            st.subheader("Сгенерированный JSON")
+            st.code(json_str, language="json")
+

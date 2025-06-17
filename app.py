@@ -5,6 +5,7 @@ from ui.json_ui import run_json_tool
 from ui.db_history_sql_query_ui import run_db_tool
 from streamlit_cookies_manager import EncryptedCookieManager
 from ui.xml_json_converter_ui import run_converter
+from ui.generate_json_ui import run_json_generator
 
 cookies = EncryptedCookieManager(password=st.secrets["cookies"]["password"])
 if not cookies.ready():
@@ -36,7 +37,8 @@ def main():
             tool_actions = {
                 "Проверка JSON": run_json_tool,
                 "Конвертер JSON ⇄ XML": run_converter,
-                "JSON-Schema": run_json_schema_generator,
+                "Генератор JSON-Schema": run_json_schema_generator,
+                "Генератор JSON": run_json_generator,
             }
             choice = st.sidebar.selectbox("Выберите инструмент:", list(tool_actions.keys()) + ["Работа с БД"])
 
