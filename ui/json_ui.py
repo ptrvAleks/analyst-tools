@@ -6,8 +6,8 @@ def display_json_result(result: dict, original_text: str):
     if result["ok"]:
         st.success("✅ JSON корректен")
         st.info(f"Количество объектов на верхнем уровне: {result['count']}")
-        st.subheader("Форматированный JSON:")
-        st.json(result["data"])
+        with st.expander("Отформатированный JSON"):
+            st.json(result["data"])
     else:
         st.error("Ошибка в JSON:")
         st.code(result["error"], language="plaintext")
@@ -15,7 +15,6 @@ def display_json_result(result: dict, original_text: str):
         match = re.search(r'строка (\d+)', result["error"])
         if match:
             line_num = int(match.group(1))
-            st.warning(f"Ошибка находится на строке: {line_num}")
 
             lines = original_text.splitlines()
             start = max(0, line_num - 5)
@@ -28,9 +27,8 @@ def display_json_result(result: dict, original_text: str):
                     snippet.append(f"{line_prefix}👉 {lines[i]}")
                 else:
                     snippet.append(f"{line_prefix}   {lines[i]}")
-            with st.expander("Отформатированный JSON"):
-                st.subheader("Контекст ошибки (±4 строки):")
-                st.code("\n".join(snippet), language="json")
+            st.subheader("Контекст ошибки (±4 строки):")
+            st.code("\n".join(snippet), language="json")
         else:
             st.info("Не удалось определить строку с ошибкой.")
 
