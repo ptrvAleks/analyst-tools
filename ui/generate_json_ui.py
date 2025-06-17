@@ -27,5 +27,5 @@ def run_json_generator():
                 json_str = process_schema(json_text)
 
             st.subheader("Сгенерированный JSON")
-            st.code(json_str, language="json")
+            st.json(json_str)
 

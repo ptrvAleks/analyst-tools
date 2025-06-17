@@ -54,4 +54,4 @@ def generate_fake_data(schema: dict):
 def process_schema(schema_text: str) -> str:
     schema = load_schema(schema_text)
     fake_data = generate_fake_data(schema)
-    return json.dumps(fake_data, indent=2, ensure_ascii=False)
+    return fake_data
