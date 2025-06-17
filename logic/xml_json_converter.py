@@ -93,19 +93,26 @@ def _postprocess_any(value: Any) -> Any:
 
 def convert_xml_to_json(xml_str: str) -> str:
     """
-    Конвертирует XML в полноценно структурированный JSON.
-
-    • Удаляет XML‑декларацию.
-    • Приводит типы значений рекурсивно.
-    • Сохраняет всю структуру (data, meta и др.).
+    Конвертирует XML в JSON:
+    • Удаляет XML-декларацию.
+    • Убирает верхнюю обёртку <root> → {...}.
+    • Преобразует "" → null, "true"/"false" → bool.
     """
+
+    # 1. Убираем строку <?xml ... ?>
     cleaned = "\n".join(
         line for line in xml_str.splitlines()
         if not line.strip().startswith("<?xml")
     )
 
-    parsed_dict = xmltodict.parse(cleaned)
+    # 2. Парсим XML
+    parsed = xmltodict.parse(cleaned)
 
-    processed = _postprocess_any(parsed_dict)
+    # 3. Удаляем "root", если он верхний
+    parsed = parsed.get("root", parsed)
 
-    return json.dumps(processed, indent=2, ensure_ascii=False)
+    # 4. Преобразуем типы
+    parsed = _postprocess_any(parsed)
+
+    # 5. Возвращаем отформатированный JSON
+    return json.dumps(parsed, indent=2, ensure_ascii=False)
