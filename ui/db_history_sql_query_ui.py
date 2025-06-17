@@ -4,7 +4,7 @@ from logic.db_history_sql_query import build_sql_query, is_valid_guid
 def run_db_tool():
     st.header("Работа с БД")
 
-    with st.expander("История отпусков пользователя"):
+    with st.expander("История отпусков пользователя", expanded=True):
         search_by = st.radio("Фильтровать по:", ["u.league_guid", "u.id"])
 
         if search_by == "u.league_guid":
