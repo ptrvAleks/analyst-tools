@@ -35,7 +35,7 @@ def main():
             st.sidebar.title("Навигация")
             tool_actions = {
                 "Проверка JSON": run_json_tool,
-                "Конвертер": run_converter,
+                "Конвертер JSON ⇄ XML": run_converter,
                 "JSON-Schema": run_json_schema_generator,
             }
             choice = st.sidebar.selectbox("Выберите инструмент:", list(tool_actions.keys()) + ["Работа с БД"])
