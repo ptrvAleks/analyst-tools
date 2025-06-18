@@ -51,6 +51,7 @@ def list_widget():
         return
     if "uid" in st.session_state:
         conversions = get_conversions(st.session_state.uid)
+        st.write("DEBUG: conversions", conversions)
 
         st.subheader("Конвертации")
 
