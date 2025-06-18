@@ -6,6 +6,7 @@ cred_dict = dict(st.secrets["firebaseConfig"])
 firebase = pyrebase.initialize_app(cred_dict)
 auth = firebase.auth()
 
+
 def login(email, password):
     try:
         user = auth.sign_in_with_email_and_password(email, password)

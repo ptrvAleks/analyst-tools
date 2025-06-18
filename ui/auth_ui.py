@@ -4,6 +4,7 @@ from auth import login, signup
 def show_login(cookies):
     st.title("Авторизация")
 
+
     with st.form(key="login_form"):
         user_email = st.text_input("Почта", key="login_user_email", autocomplete="username")
         password = st.text_input("Пароль", type="password", key="password", autocomplete="current-password")
