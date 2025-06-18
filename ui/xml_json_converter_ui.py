@@ -1,9 +1,13 @@
 import streamlit as st
 from logic.xml_json_converter import detect_format, convert_json_to_xml, convert_xml_to_json
 from ui.json_ui import display_json_result
+from database.db_methods import get_conversions, save_conversion
+
 
 def run_converter():
     st.header("🔁 Конвертер JSON ⇄ XML")
+
+    uid = st.session_state.get("uid")
 
     input_text = st.text_area("Введите JSON или XML:", height=300)
 
@@ -18,16 +22,36 @@ def run_converter():
         fmt = detect_format(input_text)
         try:
             if fmt["format"] == "json":
-                result = convert_json_to_xml(input_text, item_name=item_name)
+                converted = convert_json_to_xml(input_text, item_name=item_name)
                 st.success("Результат (XML):")
-                st.code(result, language="xml")
+                st.code(converted, language="xml")
+                save_conversion(uid, converted)
             elif fmt["format"] == "invalid_json":
                 display_json_result({"ok": False, "error": fmt["error"]}, input_text)
             elif fmt["format"] == "xml":
-                result_json = convert_xml_to_json(input_text)
+                converted = convert_xml_to_json(input_text)
                 st.success("Результат (JSON):")
-                st.code(result_json, language="json")
+                st.code(converted, language="json")
+                save_conversion(uid, converted)
             else:
                 st.error("Не удалось определить формат. Введите корректный JSON или XML.")
         except Exception as e:
             st.error(f"Ошибка при конвертации: {e}")
+
+    if uid:
+        list_widget()
+
+
+def list_widget():
+    if "uid" in st.session_state:
+        conversions = get_conversions(st.session_state.uid)
+
+        st.subheader("Конвертации")
+
+        if not conversions:
+            st.info("У вас пока нет сохранённых конвертаций")
+        else:
+            for item in conversions:
+                with st.expander(
+                        f"Конвертация от {item['timestamp'].strftime('%Y/%m/%d %H:%M:%S') if item['timestamp'] else '-'}"):
+                    st.code(item["converted"])
