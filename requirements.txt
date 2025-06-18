@@ -3,4 +3,4 @@ firebase_admin
 streamlit-cookies-manager
 xmltodict
 faker
-pyrebase
+pyrebase4
