@@ -2,9 +2,11 @@ import streamlit as st
 from logic.xml_json_converter import detect_format, convert_json_to_xml, convert_xml_to_json
 from ui.json_ui import display_json_result
 from database.db_methods import get_conversions, save_conversion
+from app import restore_session_from_cookies
 
 
 def run_converter():
+    restore_session_from_cookies()
     st.header("🔁 Конвертер JSON ⇄ XML")
 
     uid = st.session_state.get("uid")
