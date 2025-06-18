@@ -1,5 +1,5 @@
 import streamlit as st
-from ui.auth_ui import show_login
+from authentication.auth_ui import show_login
 from ui.json_schema_generator_ui import run_json_schema_generator
 from ui.json_ui import run_json_tool
 from ui.db_history_sql_query_ui import run_db_tool
