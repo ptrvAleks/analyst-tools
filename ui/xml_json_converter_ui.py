@@ -57,7 +57,7 @@ def list_widget():
         else:
             for item in conversions:
                 with st.expander(
-                        f"Конвертация от {item['timestamp'].strftime('%Y/%m/%d %H:%M:%S') if item['timestamp'] else '-'}"):
+                        f"Конвертация от {item['timestamp'].strftime('%d.%m.%Y %H:%M:%S') if item['timestamp'] else '-'}"):
                     st.code(item["converted"])
                     document_id = item["id"]
 
