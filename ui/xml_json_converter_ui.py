@@ -38,10 +38,9 @@ def run_converter():
         except Exception as e:
             st.error(f"Ошибка при конвертации: {e}")
     st.write("UID для list_widget:", uid)
-    if uid:
-        list_widget()
-    else:
-        st.info("Вы не авторизованы.")
+
+    list_widget()
+
 
 
 def list_widget():
