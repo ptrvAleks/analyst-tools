@@ -18,4 +18,4 @@ def get_conversions(uid):
     return [{"id": doc.id, **doc.to_dict()} for doc in docs]
 
 def delete_conversion(uid, document_id):
-    db.collection("users").document(uid).collection("conversions").document(document_id).delete()
+    db.collection("users").document(uid).collection("conversions").document_id.delete()
