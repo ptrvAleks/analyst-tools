@@ -13,12 +13,12 @@ def restore_session_from_cookies():
     if "authenticated" not in st.session_state:
         username_cookie = cookies.get("username")
         auth_cookie = cookies.get("auth")
-        uid = cookies.get("uid")
+        uid_cookie = cookies.get("uid")
 
-        if auth_cookie == "true" and username_cookie and uid:
+        if auth_cookie == "true" and username_cookie and uid_cookie:
             st.session_state.authenticated = True
             st.session_state.username = username_cookie
-            st.session_state.uid = uid
+            st.session_state.uid = uid_cookie
         else:
             st.session_state.authenticated = False
 
@@ -49,6 +49,7 @@ def main():
                 "Генератор JSON": run_json_generator,
             }
             choice = st.sidebar.selectbox("Выберите инструмент:", list(tool_actions.keys()) + ["Работа с БД"])
+            restore_session_from_cookies()
 
         if choice in tool_actions:
             tool_actions[choice]()  # вызываем соответствующую функцию
