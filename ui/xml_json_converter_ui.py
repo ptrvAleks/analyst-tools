@@ -44,24 +44,25 @@ def run_converter():
 
 def list_widget():
     uid = get_uid_cookie()
+
     if not uid:
         st.warning("UID не найден — пользователь не авторизован.")
         return
-    if "uid" in st.session_state:
-        conversions = get_conversions(st.session_state.uid)
 
-        st.subheader("Конвертации")
+    conversions = get_conversions(st.session_state.uid)
 
-        if not conversions:
-            st.info("У вас пока нет сохранённых конвертаций")
-        else:
-            for item in conversions:
-                with st.expander(
-                        f"Конвертация от {item['timestamp'].strftime('%d.%m.%Y %H:%M:%S') if item['timestamp'] else '-'}"):
-                    st.code(item["converted"])
-                    document_id = item["id"]
+    st.subheader("Конвертации")
 
-                    if st.button("Удалить", key=f"delete_{document_id}"):
-                        delete_conversion(uid, document_id)
-                        st.success("Удалено")
-                        st.rerun()
+    if not conversions:
+        st.info("У вас пока нет сохранённых конвертаций")
+    else:
+        for idx, item in enumerate(conversions):
+            with st.expander(
+                    f"Конвертация от {item['timestamp'].strftime('%d.%m.%Y %H:%M:%S') if item['timestamp'] else '-'}"):
+                st.code(item["converted"])
+                document_id = item["id"]
+
+                if st.button("Удалить", key=f"delete_{document_id}_{idx}"):
+                    delete_conversion(uid, document_id)
+                    st.success("Удалено")
+                    st.rerun()
