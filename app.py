@@ -10,6 +10,8 @@ from ui.generate_json_ui import run_json_generator
 cookies = EncryptedCookieManager(password=st.secrets["cookies"]["password"])
 if not cookies.ready():
     st.stop()
+st.write("Восстановили uid:", st.session_state.get("uid"))
+
 
 def main():
     if "authenticated" not in st.session_state:
@@ -20,7 +22,6 @@ def main():
             st.session_state.authenticated = True
             st.session_state.username = username_cookie
             st.session_state.uid = uid_cookie
-            st.write("Восстановили uid:", st.session_state.get("uid"))
         else:
             st.session_state.authenticated = False
     # Проверка, залогинен ли пользователь
