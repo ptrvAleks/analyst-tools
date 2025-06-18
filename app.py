@@ -20,6 +20,7 @@ def main():
             st.session_state.authenticated = True
             st.session_state.username = username_cookie
             st.session_state.uid = uid_cookie
+            st.write("Восстановили uid:", st.session_state.get("uid"))
         else:
             st.session_state.authenticated = False
     # Проверка, залогинен ли пользователь

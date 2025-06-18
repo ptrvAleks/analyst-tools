@@ -15,7 +15,6 @@ def show_login(cookies):
             st.session_state.username = user_email
             st.session_state.uid = user["uid"]
 
-
             cookies["username"] = user_email
             cookies["auth"] = "true"
             cookies["uid"] = user["uid"]
