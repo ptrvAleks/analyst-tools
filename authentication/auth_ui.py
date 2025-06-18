@@ -1,5 +1,5 @@
 import streamlit as st
-from auth import login, signup
+from authentication.auth import login, signup
 
 def show_login(cookies):
     st.title("Авторизация")
