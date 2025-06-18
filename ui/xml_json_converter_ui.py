@@ -61,7 +61,7 @@ def list_widget():
                     st.code(item["converted"])
                     document_id = item["id"]
 
-                    if st.button("Удалить"):
-                        delete_conversion(uid, document_id)  # Твоя функция удаления
+                    if st.button("Удалить", key=f"delete_{document_id}"):
+                        delete_conversion(uid, document_id)
                         st.success("Удалено")
                         st.rerun()
