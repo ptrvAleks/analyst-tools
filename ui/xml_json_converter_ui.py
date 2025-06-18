@@ -6,7 +6,6 @@ from cookie_managment import get_uid_cookie
 
 
 def run_converter():
-
     st.header("🔁 Конвертер JSON ⇄ XML")
 
     uid = get_uid_cookie()
@@ -43,9 +42,7 @@ def run_converter():
     list_widget()
 
 
-
 def list_widget():
-
     uid = get_uid_cookie()
     if not uid:
         st.warning("UID не найден — пользователь не авторизован.")
