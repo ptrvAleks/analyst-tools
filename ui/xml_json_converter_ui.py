@@ -6,10 +6,10 @@ from cookie_managment import get_uid_cookie
 
 
 def run_converter():
-
+    get_uid_cookie()
     st.header("🔁 Конвертер JSON ⇄ XML")
 
-    uid = get_uid_cookie()
+    uid = st.session_state.get("uid")
 
     input_text = st.text_area("Введите JSON или XML:", height=300)
 
