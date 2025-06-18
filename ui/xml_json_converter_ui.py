@@ -46,7 +46,8 @@ def run_converter():
 
 
 def list_widget():
-    uid = cookies.get("uid")
+
+    uid = get_uid_cookie()
     if not uid:
         st.warning("UID не найден — пользователь не авторизован.")
         return
