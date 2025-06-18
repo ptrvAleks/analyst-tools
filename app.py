@@ -42,15 +42,15 @@ def main():
             }
             choice = st.sidebar.selectbox("Выберите инструмент:", list(tool_actions.keys()) + ["Работа с БД"])
 
-    if choice in tool_actions:
-        tool_actions[choice]()  # вызываем соответствующую функцию
+            if choice in tool_actions:
+                tool_actions[choice]()  # вызываем соответствующую функцию
 
-    elif choice == "Работа с БД":
-        with st.sidebar.expander("Действия с БД", expanded=True):
-            db_action = st.radio("Выберите действие:", ["Просмотр"], key="db_action")
+            elif choice == "Работа с БД":
+                with st.sidebar.expander("Действия с БД", expanded=True):
+                    db_action = st.radio("Выберите действие:", ["Просмотр"], key="db_action")
 
-        if db_action == "Просмотр":
-            run_db_tool()
+                if db_action == "Просмотр":
+                    run_db_tool()
 
 
 
