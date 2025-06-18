@@ -16,3 +16,6 @@ def get_conversions(uid):
     .order_by("timestamp", direction=firestore.Query.DESCENDING).stream()
 
     return [{"id": doc.id, **doc.to_dict()} for doc in docs]
+
+def delete_conversion(uid, document_id):
+    db.collection("conversions").document(document_id).delete()

@@ -1,7 +1,7 @@
 import streamlit as st
 from logic.xml_json_converter import detect_format, convert_json_to_xml, convert_xml_to_json
 from ui.json_ui import display_json_result
-from database.db_methods import get_conversions, save_conversion
+from database.db_methods import get_conversions, save_conversion, delete_conversion
 from cookie_managment import get_uid_cookie
 
 
@@ -62,3 +62,9 @@ def list_widget():
                 with st.expander(
                         f"Конвертация от {item['timestamp'].strftime('%Y/%m/%d %H:%M:%S') if item['timestamp'] else '-'}"):
                     st.code(item["converted"])
+                    document_id = item["doc.id"]
+
+                    if st.button("Удалить", key=f"delete_{document_id}"):
+                        delete_conversion(item["id"])  # Твоя функция удаления
+                        st.success("Удалено")
+                        st.rerun()
