@@ -13,7 +13,7 @@ def run_db_tool():
             search_value = st.text_input("Введи значение id", key="user_id")
 
         va_fields = ["va.id", "va.user_id", "va.rev", "va.start_date", "va.end_date", "va.vacation_type", "va.vacation_status"]
-        r_fields = ["r.rev", "r.timestamp", "r.creator"]
+        r_fields = ["r.rev", "r.revtstmp", "r.creator"]
 
         selected_va_fields = st.multiselect("Поля из vacation_aud (va):", va_fields, default=va_fields)
         selected_r_fields = st.multiselect("Поля из revinfo (r):", r_fields, default=r_fields)
