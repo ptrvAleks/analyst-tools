@@ -13,9 +13,10 @@ def show_login(cookies):
         if submit and user:
             st.session_state.authenticated = True
             st.session_state.username = user_email
+            st.session_state.uid = user["uid"]
+
 
             cookies["username"] = user_email
-            st.session_state.uid = user["uid"]
             cookies["auth"] = "true"
             cookies.save()
             st.rerun()
