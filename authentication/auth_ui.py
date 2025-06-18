@@ -18,6 +18,7 @@ def show_login(cookies):
 
             cookies["username"] = user_email
             cookies["auth"] = "true"
+            cookies["uid"] = user["uid"]
             cookies.save()
             st.rerun()
         elif submit:
