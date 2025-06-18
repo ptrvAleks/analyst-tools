@@ -2,7 +2,7 @@ import streamlit as st
 from logic.xml_json_converter import detect_format, convert_json_to_xml, convert_xml_to_json
 from ui.json_ui import display_json_result
 from database.db_methods import get_conversions, save_conversion
-from app import get_uid_cookie
+from cookie_managment import get_uid_cookie
 
 
 def run_converter():
