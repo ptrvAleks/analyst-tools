@@ -40,9 +40,15 @@ def run_converter():
 
     if uid:
         list_widget()
+    else:
+        st.info("Вы не авторизованы.")
 
 
 def list_widget():
+    uid = st.session_state.get("uid")
+    if not uid:
+        st.warning("UID не найден — пользователь не авторизован.")
+        return
     if "uid" in st.session_state:
         conversions = get_conversions(st.session_state.uid)
 
