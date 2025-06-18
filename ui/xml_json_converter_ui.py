@@ -6,10 +6,10 @@ from cookie_managment import get_uid_cookie
 
 
 def run_converter():
-    get_uid_cookie()
+
     st.header("🔁 Конвертер JSON ⇄ XML")
 
-    uid = st.session_state.get("uid")
+    uid = get_uid_cookie()
 
     input_text = st.text_area("Введите JSON или XML:", height=300)
 
@@ -39,7 +39,6 @@ def run_converter():
                 st.error("Не удалось определить формат. Введите корректный JSON или XML.")
         except Exception as e:
             st.error(f"Ошибка при конвертации: {e}")
-    st.write("UID для list_widget:", uid)
 
     list_widget()
 
@@ -53,7 +52,6 @@ def list_widget():
         return
     if "uid" in st.session_state:
         conversions = get_conversions(st.session_state.uid)
-        st.write("DEBUG: conversions", conversions)
 
         st.subheader("Конвертации")
 
