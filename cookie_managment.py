@@ -2,7 +2,7 @@ import extra_streamlit_components as stx
 import datetime
 import streamlit as st
 
-cookie_manager = stx.CookieManager()
+cookie_manager = stx.CookieManager(key="cookie_manager")
 
 def set_uid_cookie(uid: str):
     cookie_manager.set("uid", uid, key="set_uid", expires_at=datetime.datetime.now() + datetime.timedelta(days=7))
