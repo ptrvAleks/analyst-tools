@@ -5,3 +5,4 @@ xmltodict
 faker
 pyrebase4
 setuptools
+extra-streamlit-components

@@ -6,8 +6,20 @@ from ui.db_history_sql_query_ui import run_db_tool
 from streamlit_cookies_manager import EncryptedCookieManager
 from ui.xml_json_converter_ui import run_converter
 from ui.generate_json_ui import run_json_generator
+import extra_streamlit_components as stx
+import datetime
 
+cookie_manager = stx.CookieManager()
 cookies = EncryptedCookieManager(password=st.secrets["cookies"]["password"])
+
+def set_uid_cookie(uid: str):
+    cookie_manager.set("uid", uid, key="set_uid", expires_at=datetime.datetime.now() + datetime.timedelta(days=7))
+
+def get_uid_cookie():
+    result = cookie_manager.get("uid")
+    if result and result["uid"]:
+        return result["uid"]
+    return None
 
 def restore_session_from_cookies():
     if "authenticated" not in st.session_state:

@@ -1,5 +1,6 @@
 import streamlit as st
 from authentication.auth import login, signup
+from app import set_uid_cookie
 
 def show_login(cookies):
     st.title("Авторизация")
@@ -11,10 +12,12 @@ def show_login(cookies):
 
         user = login(user_email, password)
         if submit and user:
+            uid = user["localId"]
             st.session_state.authenticated = True
             st.session_state.username = user_email
-            st.session_state.uid = user["localId"]
+            st.session_state.uid = uid
 
+            set_uid_cookie(uid)
             cookies["username"] = user_email
             cookies["auth"] = "true"
             cookies["uid"] = st.session_state.uid
