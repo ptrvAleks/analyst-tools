@@ -49,7 +49,6 @@ def main():
                 "Генератор JSON": run_json_generator,
             }
             choice = st.sidebar.selectbox("Выберите инструмент:", list(tool_actions.keys()) + ["Работа с БД"])
-            restore_session_from_cookies()
 
         if choice in tool_actions:
             tool_actions[choice]()  # вызываем соответствующую функцию

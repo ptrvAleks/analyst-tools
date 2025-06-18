@@ -2,6 +2,7 @@ import streamlit as st
 from logic.xml_json_converter import detect_format, convert_json_to_xml, convert_xml_to_json
 from ui.json_ui import display_json_result
 from database.db_methods import get_conversions, save_conversion
+from app import cookies
 
 
 def run_converter():
@@ -44,7 +45,7 @@ def run_converter():
 
 
 def list_widget():
-    uid = st.session_state.get("uid")
+    uid = cookies.get("uid")
     if not uid:
         st.warning("UID не найден — пользователь не авторизован.")
         return
