@@ -37,7 +37,7 @@ def run_converter():
                 st.error("Не удалось определить формат. Введите корректный JSON или XML.")
         except Exception as e:
             st.error(f"Ошибка при конвертации: {e}")
-
+    st.write("UID для list_widget:", uid)
     if uid:
         list_widget()
     else:
