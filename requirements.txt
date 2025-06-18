@@ -4,3 +4,4 @@ streamlit-cookies-manager
 xmltodict
 faker
 pyrebase4
+setuptools
