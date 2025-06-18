@@ -62,9 +62,9 @@ def list_widget():
                 with st.expander(
                         f"Конвертация от {item['timestamp'].strftime('%Y/%m/%d %H:%M:%S') if item['timestamp'] else '-'}"):
                     st.code(item["converted"])
-                    document_id = item["doc.id"]
+                    document_id = item["id"]
 
                     if st.button("Удалить", key=f"delete_{document_id}"):
-                        delete_conversion(item["id"])  # Твоя функция удаления
+                        delete_conversion(uid, item["id"])  # Твоя функция удаления
                         st.success("Удалено")
                         st.rerun()
