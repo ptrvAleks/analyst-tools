@@ -27,7 +27,7 @@ if not cookies.ready():
 restore_session_from_cookies()
 
 def main():
-    st.write("Восстановили uid:", st.session_state.get("uid"))
+    st.warning("Восстановили uid:", st.session_state.get("uid"))
     # Проверка, залогинен ли пользователь
     if not st.session_state.get("authenticated"):
         show_login(cookies)
