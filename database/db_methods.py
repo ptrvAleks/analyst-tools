@@ -19,3 +19,14 @@ def get_conversions(uid):
 
 def delete_conversion(uid, document_id):
     db.collection("users").document(uid).collection("conversions").document(document_id).delete()
+
+def delete_user_data(uid: str):
+    user_ref = db.collection("users").document(uid)
+    conversions_ref = user_ref.collection("conversions").stream()
+
+    # Удаляем все документы в подколлекции "conversions"
+    for doc in conversions_ref:
+        user_ref.collection("conversions").document(doc.id).delete()
+
+    # Удаляем сам документ пользователя
+    user_ref.delete()

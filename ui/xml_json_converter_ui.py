@@ -1,13 +1,12 @@
 import streamlit as st
 from logic.xml_json_converter import detect_format, convert_json_to_xml, convert_xml_to_json
 from ui.json_ui import display_json_result
-from database.db_methods import get_conversions, save_conversion, delete_conversion
+from database.db_methods import get_conversions, save_conversion, delete_conversion, delete_user_data
 from cookie_managment import get_uid_cookie
 
 
 def run_converter():
     st.header("🔁 Конвертер JSON ⇄ XML")
-
     uid = get_uid_cookie()
 
     input_text = st.text_area("Введите JSON или XML:", height=300)
