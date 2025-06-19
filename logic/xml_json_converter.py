@@ -1,7 +1,7 @@
 import json
 import xmltodict
 from logic.json_utils import validate_json
-from typing import Union, Optional, List, Dict, Any
+from typing import Any
 import re
 
 def detect_format(text: str) -> dict:

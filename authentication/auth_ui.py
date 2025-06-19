@@ -1,6 +1,6 @@
 import streamlit as st
 from authentication.auth import login, signup
-from cookie_managment import set_uid_cookie
+from cookie_firebase_uid import set_uid_cookie
 
 def show_login(cookies):
     st.title("Авторизация")
