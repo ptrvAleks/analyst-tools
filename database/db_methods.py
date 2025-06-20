@@ -1,7 +1,7 @@
 from firebase_admin import firestore
 from datetime import datetime, timedelta, timezone
 from database.db import db
-from google.cloud import firestore as gcfirestore
+from google.cloud.firestore import Query
 
 
 MSK = timezone(timedelta(hours=3))  # Москва — UTC+3
@@ -15,7 +15,7 @@ def save_conversion(uid, result):
 
 def get_conversions(uid):
     docs = firestore.client().collection("users").document(uid).collection("conversions") \
-        .order_by("timestamp", direction=gcfirestore.Query.DESCENDING).stream()
+        .order_by("timestamp", direction=Query.DESCENDING).stream()
 
     return [{"id": doc.id, **doc.to_dict()} for doc in docs]
 
@@ -32,3 +32,9 @@ def delete_user_data(uid: str):
 
     # Удаляем сам документ пользователя
     user_ref.delete()
+
+def get_user_role(uid: str):
+    role = firestore.client().collection("users").document(uid).get()
+    if role.exists:
+        return role.to_dict().get("role")
+    return None
