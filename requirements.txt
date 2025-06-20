@@ -3,8 +3,8 @@ firebase_admin
 streamlit-cookies-manager
 xmltodict
 faker
-pyrebase4
 setuptools
 extra-streamlit-components
 google
 google-cloud-firestore
+pyrebase4
