@@ -6,6 +6,8 @@ from database.db_methods import get_user_role
 from streamlit_cookies_manager import EncryptedCookieManager
 from cookie_firebase_uid import set_uid_cookie
 from logic.user import User
+from typing import Optional
+
 
 
 class AuthManager:
@@ -51,11 +53,11 @@ class AuthManager:
             print("Login failed:", e)
             return False
 
-    def register(self, reg_email: str, reg_pwd: str) -> bool:
+    def register(self, reg_email: str, reg_pwd: str, reg_first_name: Optional[str] = None) -> bool:
         try:
             user = self.auth.create_user_with_email_and_password(reg_email, reg_pwd)
             uid = user["localId"]
-            self._finalize_auth(reg_email, uid)
+            self._finalize_auth(reg_email, uid, reg_first_name)
             return True
         except Exception as e:
             print("Registration failed:", e)
@@ -63,10 +65,10 @@ class AuthManager:
 
     def logout(self):
         """Полный выход: очищаем session_state и куки, делаем rerun."""
-        for key in ("authenticated", "username", "uid", "role"):
+        for key in ("authenticated", "username", "uid", "role", "name", "user", "login_submitted", "register_submitted"):
             st.session_state.pop(key, None)
 
-        for key in ("username", "auth", "uid", "role"):
+        for key in ("username", "auth", "uid", "role", "name"):
             self.cookies[key] = ""
         self.cookies.save()
         st.rerun()
@@ -77,9 +79,10 @@ class AuthManager:
         uid = self.cookies.get("uid")
         role = self.cookies.get("role") or "user"
         auth = self.cookies.get("auth") == "true"
+        name = self.cookies.get("name")
 
         if auth and email and uid:
-            user = User(email=email, uid=uid, role=role)
+            user = User(email=email, uid=uid, role=role, name=name)
             st.session_state.update({
                 "authenticated": True,
                 "user": user,  # ← объект снова в сессии
@@ -87,10 +90,10 @@ class AuthManager:
         else:
             st.session_state["authenticated"] = False
 
-    def _finalize_auth(self, email: str, uid: str):
+    def _finalize_auth(self, email: str, uid: str, reg_first_name: Optional[str] = None):
         """Общая логика для login / register."""
         role = get_user_role(uid)
-        user = User(email=email, uid=uid, role=role)
+        user = User(email=email, uid=uid, role=role, name=reg_first_name)
 
         # Сохраняем в session_state
         st.session_state.update({
@@ -98,7 +101,8 @@ class AuthManager:
             "username": email,
             "uid": uid,
             "role": role,
-            "user": user
+            "user": user,
+            "name": reg_first_name,
         })
 
         # Устанавливаем cookie
@@ -106,6 +110,8 @@ class AuthManager:
         self.cookies["uid"] = uid
         self.cookies["auth"] = "true"
         self.cookies["role"] = role
+        if reg_first_name:
+            self.cookies["name"] = reg_first_name
         self.cookies.save()
 
         set_uid_cookie(uid)
