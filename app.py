@@ -8,9 +8,7 @@ from ui.generate_json_ui import run_json_generator
 from authentication.auth_manager import AuthManager
 from ui.sidebar_ui import show_sidebar
 
-
 auth = AuthManager(st.secrets["cookies"]["password"])
-
 
 def main():
     if not auth.is_authenticated:
@@ -31,8 +29,6 @@ def main():
         run_json_schema_generator()
     elif choice == "Генератор JSON":
         run_json_generator()
-
-
 
 if __name__ == "__main__":
     main()
