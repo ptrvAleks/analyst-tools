@@ -55,7 +55,7 @@
 
 pip install -r requirements.txt
 
-3. В Streamlit Cloud Secrets добавьте данные Firebase (для авторизации и базы данных) и пароль для шифрования cookies
+3. 	В Streamlit Cloud Secrets или secrets.toml добавьте данные Firebase (для авторизации и базы данных) и пароль для шифрования cookies
    
 Пример:
 ```yaml
@@ -87,10 +87,11 @@ databaseURL = "https://your-project-id-default-rtdb.region.firebasedatabase.app"
 projectId = "your-project-id"
 storageBucket = "your-project-id.appspot.com"
 messagingSenderId = "123456789012"
-appId = "1:123456789012:web:abcdef1234567890" ```
+appId = "1:123456789012:web:abcdef1234567890"
 
 
-3. Запустите приложение:
+
+4.	Запустите приложение:
 
 streamlit run app.py
 
