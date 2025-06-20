@@ -32,3 +32,9 @@ def delete_user_data(uid: str):
 
     # Удаляем сам документ пользователя
     user_ref.delete()
+
+def get_user_role(uid: str):
+    role = firestore.client().collection("users").document(uid).get()
+    if role.exists:
+        return role.to_dict().get("role")
+    return None
