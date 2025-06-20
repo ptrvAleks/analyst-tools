@@ -4,6 +4,11 @@ from cookie_firebase_uid import set_uid_cookie
 
 def show_login(cookies):
     st.title("Авторизация")
+    if "login_user_email" not in st.session_state:
+        st.session_state["login_user_email"] = ""
+
+    if "password" not in st.session_state:
+        st.session_state["password"] = ""
 
     # ---------- Форма логина ----------
     with st.form(key="login_form"):
@@ -14,7 +19,7 @@ def show_login(cookies):
         login_submit = st.form_submit_button("Войти")
 
         if login_submit:
-            user = login(login_email, login_pwd)   # вызов только при нажатии
+            user = login(login_email, login_pwd)
             if user:
                 uid = user["localId"]
                 st.session_state.update({
@@ -42,9 +47,9 @@ def show_login(cookies):
         reg_submit = st.form_submit_button("Регистрация")
 
         if reg_submit:
-            new_user = signup(reg_email, reg_pwd)   # вызываем ТОЛЬКО при клике
+            new_user = signup(reg_email, reg_pwd)
             if new_user:
-                uid = new_user["localId"]           # <— исправлено имя переменной
+                uid = new_user["localId"]
                 st.session_state.update({
                     "authenticated": True,
                     "username": reg_email,

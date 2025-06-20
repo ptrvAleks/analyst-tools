@@ -47,6 +47,8 @@ def main():
                 st.session_state.uid = None
                 cookies["username"] = ""
                 cookies["auth"] = ""
+                st.session_state.pop("role", None)
+                cookies["role"] = ""
                 cookies.save()
                 st.rerun()
             st.title("Навигация")
