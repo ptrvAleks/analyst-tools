@@ -87,7 +87,7 @@ databaseURL = "https://your-project-id-default-rtdb.region.firebasedatabase.app"
 projectId = "your-project-id"
 storageBucket = "your-project-id.appspot.com"
 messagingSenderId = "123456789012"
-appId = "1:123456789012:web:abcdef1234567890"
+appId = "1:123456789012:web:abcdef1234567890" ```
 
 
 3. Запустите приложение:
