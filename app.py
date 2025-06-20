@@ -15,8 +15,10 @@ def main():
         show_login(auth)
         return
 
-    role = auth.role
-    choice, db_action = show_sidebar(auth, role)
+    user = auth.user
+    print(f"Вошёл пользователь {user.email} с ролью {user.role}")
+
+    choice, db_action = show_sidebar(auth, user.role)
 
     if choice == "Работа с БД":
         if db_action == "Просмотр":

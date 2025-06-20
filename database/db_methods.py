@@ -37,4 +37,4 @@ def get_user_role(uid: str):
     role = firestore.client().collection("users").document(uid).get()
     if role.exists:
         return role.to_dict().get("role")
-    return None
+    return "user"
