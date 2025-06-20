@@ -1,6 +1,6 @@
 import streamlit as st
 
-def show_sidebar(auth, user_role: str):
+def show_sidebar(auth, user_role, name):
 
     tool_actions = {
         "Проверка JSON": "run_json_tool",
@@ -10,6 +10,8 @@ def show_sidebar(auth, user_role: str):
     }
 
     with st.sidebar:
+        if name:
+            st.header(f"Привет, {name}!")
         if st.button("Выйти"):
             auth.logout()
         st.title("Навигация")
