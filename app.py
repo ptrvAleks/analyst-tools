@@ -7,7 +7,6 @@ from streamlit_cookies_manager import EncryptedCookieManager
 from ui.xml_json_converter_ui import run_converter
 from ui.generate_json_ui import run_json_generator
 
-
 cookies = EncryptedCookieManager(password=st.secrets["cookies"]["password"])
 
 def restore_session_from_cookies():
@@ -23,6 +22,9 @@ def restore_session_from_cookies():
         else:
             st.session_state.authenticated = False
 
+def get_user_email():
+    return st.session_state.get("username", None)
+
 if not cookies.ready():
     st.stop()
 restore_session_from_cookies()
@@ -32,6 +34,7 @@ def main():
     if not st.session_state.get("authenticated"):
         show_login(cookies)
     else:
+        user_email = get_user_email()
         with st.sidebar:
             # Кнопка выхода
             if st.button("Выйти"):
@@ -49,6 +52,8 @@ def main():
                 "Генератор JSON-Schema": run_json_schema_generator,
                 "Генератор JSON": run_json_generator,
             }
+
+
             choice = st.sidebar.selectbox("Выберите инструмент:", list(tool_actions.keys()) + ["Работа с БД"])
 
         if choice in tool_actions:

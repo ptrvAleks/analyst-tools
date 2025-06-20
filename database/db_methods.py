@@ -1,6 +1,7 @@
 from firebase_admin import firestore
 from datetime import datetime, timedelta, timezone
 from database.db import db
+from google.cloud.firestore import Query
 
 MSK = timezone(timedelta(hours=3))  # Москва — UTC+3
 
