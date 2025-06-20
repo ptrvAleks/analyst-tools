@@ -6,3 +6,4 @@ faker
 pyrebase4
 setuptools
 extra-streamlit-components
+google-cloud-firestore
