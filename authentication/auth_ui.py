@@ -30,8 +30,9 @@ def show_login(auth: AuthManager):
                 st.stop()
 
     st.subheader("Регистрация")
-    reg_email = st.text_input("Почта", key="register_user_email", autocomplete="username")
-    reg_pwd   = st.text_input("Пароль", type="password", key="register_password", autocomplete="new-password")
+
+    reg_email = st.text_input("Почта*", key="register_user_email", autocomplete="username")
+    reg_pwd   = st.text_input("Пароль*", type="password", key="register_password", autocomplete="new-password")
     reg_first_name = st.text_input("Имя", key="register_name", autocomplete="new-name")
 
     if "register_submitted" not in st.session_state:
