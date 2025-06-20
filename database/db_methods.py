@@ -1,7 +1,8 @@
 from firebase_admin import firestore
 from datetime import datetime, timedelta, timezone
 from database.db import db
-from google.cloud.firestore import Query
+from google.cloud import firestore as gcfirestore
+
 
 MSK = timezone(timedelta(hours=3))  # Москва — UTC+3
 
@@ -13,8 +14,8 @@ def save_conversion(uid, result):
     })
 
 def get_conversions(uid):
-    docs = db.collection("users").document(uid).collection("conversions") \
-    .order_by("timestamp", direction=firestore.Query.DESCENDING).stream()
+    docs = firestore.client().collection("users").document(uid).collection("conversions") \
+        .order_by("timestamp", direction=gcfirestore.Query.DESCENDING).stream()
 
     return [{"id": doc.id, **doc.to_dict()} for doc in docs]
 
