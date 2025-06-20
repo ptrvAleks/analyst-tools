@@ -1,9 +1,11 @@
 import pyrebase
 import streamlit as st
+from pydantic import EmailStr
+
 from database.db_methods import get_user_role
 from streamlit_cookies_manager import EncryptedCookieManager
 from cookie_firebase_uid import set_uid_cookie
-
+from logic.user import User
 
 
 class AuthManager:
@@ -71,32 +73,44 @@ class AuthManager:
 
     # ---------------------- internal helpers ----------------------
     def _restore_session(self):
-        username = self.cookies.get("username")
-        auth_flag = self.cookies.get("auth")
+        email = self.cookies.get("username")
         uid = self.cookies.get("uid")
+        role = self.cookies.get("role") or "user"
+        auth = self.cookies.get("auth") == "true"
 
-        if auth_flag == "true" and username and uid:
+        if auth and email and uid:
+            user = User(email=email, uid=uid, role=role)
             st.session_state.update({
                 "authenticated": True,
-                "username": username,
-                "uid": uid,
+                "user": user,  # ← объект снова в сессии
             })
         else:
             st.session_state["authenticated"] = False
 
     def _finalize_auth(self, email: str, uid: str):
         """Общая логика для login / register."""
+        role = get_user_role(uid)
+        user = User(email=email, uid=uid, role=role)
+
+        # Сохраняем в session_state
         st.session_state.update({
             "authenticated": True,
             "username": email,
             "uid": uid,
+            "role": role,
+            "user": user
         })
-        set_uid_cookie(uid)
 
+        # Устанавливаем cookie
         self.cookies["username"] = email
         self.cookies["uid"] = uid
         self.cookies["auth"] = "true"
-        self.cookies["role"] = st.session_state.get("role", "")
+        self.cookies["role"] = role
         self.cookies.save()
 
+        set_uid_cookie(uid)
         st.rerun()
+
+    @property
+    def user(self) -> "User | None":
+        return st.session_state.get("user")

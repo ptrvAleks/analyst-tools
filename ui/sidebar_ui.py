@@ -1,7 +1,6 @@
 import streamlit as st
 
-def show_sidebar(auth, role: str):
-    from ui.db_history_sql_query_ui import run_db_tool
+def show_sidebar(auth, user_role: str):
 
     tool_actions = {
         "Проверка JSON": "run_json_tool",
@@ -15,7 +14,7 @@ def show_sidebar(auth, role: str):
             auth.logout()
         st.title("Навигация")
         options = list(tool_actions.keys())
-        if role == "admin":
+        if user_role == "admin":
             options.append("Работа с БД")
         choice = st.selectbox("Выберите инструмент:", options)
 

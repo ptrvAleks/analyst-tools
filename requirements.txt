@@ -8,3 +8,6 @@ extra-streamlit-components
 google
 google-cloud-firestore
 pyrebase4
+pydantic
+pandas
+pydantic[email]
