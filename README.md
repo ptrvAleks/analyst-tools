@@ -88,6 +88,7 @@ projectId = "your-project-id"
 storageBucket = "your-project-id.appspot.com"
 messagingSenderId = "123456789012"
 appId = "1:123456789012:web:abcdef1234567890"
+```
 
 
 
