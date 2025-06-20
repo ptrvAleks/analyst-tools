@@ -8,7 +8,6 @@ from cookie_firebase_uid import set_uid_cookie
 
 class AuthManager:
     """Единая точка управления аутентификацией, сессией и ролями."""
-    # Инициализация Firebase
 
 
     def __init__(self, cookie_password: str):
@@ -17,6 +16,7 @@ class AuthManager:
         if not self.cookies.ready():
             self.cookies.save()  # создаём пустые
             st.stop()
+        # Инициализация Firebase
         self.firebase = pyrebase.initialize_app(dict(st.secrets["firebaseConfig"]))
         self.auth = self.firebase.auth()
 
