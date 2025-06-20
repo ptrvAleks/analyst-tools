@@ -55,8 +55,42 @@
 
 pip install -r requirements.txt
 
+3. В Streamlit Cloud Secrets добавьте данные Firebase (для авторизации и базы данных) и пароль для шифрования cookies
+   
+Пример:
+```yaml
+[firebase]
+type = "service_account"
+project_id = "your-project-id"
+private_key_id = "your-private-key-id"
+private_key = """
+-----BEGIN PRIVATE KEY-----\n
+YOUR_PRIVATE_KEY_CONTENT_HERE\n
+-----END PRIVATE KEY-----\n
+"""
+client_email = "firebase-adminsdk-abcde@your-project-id.iam.gserviceaccount.com"
+client_id = "123456789012345678901"
+auth_uri = "https://accounts.google.com/o/oauth2/auth"
+token_uri = "https://oauth2.googleapis.com/token"
+auth_provider_x509_cert_url = "https://www.googleapis.com/oauth2/v1/certs"
+client_x509_cert_url = "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-abcde%40your-project-id.iam.gserviceaccount.com"
+universe_domain = "googleapis.com"
 
-3.	Запустите приложение:
+[cookies]
+# Пример пароля для шифрования cookies (замените на свой)
+password = "your-cookie-secret"
+
+[firebaseConfig]
+apiKey = "your-api-key"
+authDomain = "your-project-id.firebaseapp.com"
+databaseURL = "https://your-project-id-default-rtdb.region.firebasedatabase.app"
+projectId = "your-project-id"
+storageBucket = "your-project-id.appspot.com"
+messagingSenderId = "123456789012"
+appId = "1:123456789012:web:abcdef1234567890"
+
+
+3. Запустите приложение:
 
 streamlit run app.py
 
