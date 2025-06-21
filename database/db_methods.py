@@ -36,5 +36,5 @@ def delete_user_data(uid: str):
 def get_user_role(uid: str):
     role = firestore.client().collection("users").document(uid).get()
     if role.exists:
-        return role.to_dict().get("role")
+        return role.to_dict().get("role", "user")
     return "user"
