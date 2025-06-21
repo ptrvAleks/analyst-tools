@@ -1,7 +1,5 @@
 import pyrebase
 import streamlit as st
-from pydantic import EmailStr
-
 from database.db_methods import get_user_role
 from streamlit_cookies_manager import EncryptedCookieManager
 from cookie_firebase_uid import set_uid_cookie
@@ -57,6 +55,8 @@ class AuthManager:
         try:
             user = self.auth.create_user_with_email_and_password(reg_email, reg_pwd)
             uid = user["localId"]
+            if reg_first_name:
+                User.set_user_first_name(uid, reg_first_name)
             self._finalize_auth(reg_email, uid, reg_first_name)
             return True
         except Exception as e:
@@ -65,10 +65,10 @@ class AuthManager:
 
     def logout(self):
         """Полный выход: очищаем session_state и куки, делаем rerun."""
-        for key in ("authenticated", "username", "uid", "role", "name", "user", "login_submitted", "register_submitted"):
+        for key in ("authenticated", "username", "uid", "role", "first_name", "user", "login_submitted", "register_submitted"):
             st.session_state.pop(key, None)
 
-        for key in ("username", "auth", "uid", "role", "name"):
+        for key in ("username", "auth", "uid", "role", "first_name"):
             self.cookies[key] = ""
         self.cookies.save()
         st.rerun()
@@ -79,10 +79,10 @@ class AuthManager:
         uid = self.cookies.get("uid")
         role = self.cookies.get("role") or "user"
         auth = self.cookies.get("auth") == "true"
-        name = self.cookies.get("name")
+        first_name = self.cookies.get("first_name")
 
         if auth and email and uid:
-            user = User(email=email, uid=uid, role=role, name=name)
+            user = User(email=email, uid=uid, role=role, first_name=first_name)
             st.session_state.update({
                 "authenticated": True,
                 "user": user,  # ← объект снова в сессии
@@ -90,28 +90,42 @@ class AuthManager:
         else:
             st.session_state["authenticated"] = False
 
-    def _finalize_auth(self, email: str, uid: str, reg_first_name: Optional[str] = None):
+    def _finalize_auth(
+            self,
+            email: str,
+            uid: str,
+            first_name: Optional[str] = None,
+    ) -> None:
         """Общая логика для login / register."""
-        role = get_user_role(uid)
-        user = User(email=email, uid=uid, role=role, name=reg_first_name)
+        # 1. Роль всегда либо 'user', либо 'admin'
+        role = get_user_role(uid) or "user"
 
-        # Сохраняем в session_state
-        st.session_state.update({
-            "authenticated": True,
-            "username": email,
-            "uid": uid,
-            "role": role,
-            "user": user,
-            "name": reg_first_name,
-        })
+        # 2. Если имя не передали (логин) — пробуем достать из Firestore
+        if first_name is None:
+            first_name = User.get_user_first_name(uid)
 
-        # Устанавливаем cookie
+        # 3. Создаём объект пользователя
+        user = User(email=email, uid=uid, role=role, first_name=first_name)
+
+        # 4. Обновляем session_state
+        st.session_state.update(
+            {
+                "authenticated": True,
+                "username": email,
+                "uid": uid,
+                "role": role,
+                "user": user,
+                "name": first_name,
+            }
+        )
+
+        # 5. Куки (используем единый ключ 'name')
         self.cookies["username"] = email
         self.cookies["uid"] = uid
         self.cookies["auth"] = "true"
         self.cookies["role"] = role
-        if reg_first_name:
-            self.cookies["name"] = reg_first_name
+        if first_name:
+            self.cookies["first_name"] = first_name
         self.cookies.save()
 
         set_uid_cookie(uid)
