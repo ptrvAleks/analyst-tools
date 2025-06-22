@@ -1,7 +1,7 @@
 import streamlit as st
-from logic.generate_json import process_schema
-from logic.json_utils import validate_json
-from ui.json_ui import display_json_result
+from features.generate_json.generate_json import process_schema
+from features.json_utils.json_utils import validate_json
+from features.json_utils.json_ui import display_json_result
 
 def run_json_generator():
     st.header("Генератор JSON")

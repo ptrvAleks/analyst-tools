@@ -1,10 +1,10 @@
 import streamlit as st
 from authentication.auth_ui import show_login
-from ui.json_schema_generator_ui import run_json_schema_generator
-from ui.json_ui import run_json_tool
-from ui.db_history_sql_query_ui import run_db_tool
-from ui.xml_json_converter_ui import run_converter
-from ui.generate_json_ui import run_json_generator
+from features.json_schema_generator.json_schema_generator_ui import run_json_schema_generator
+from features.json_utils.json_ui import run_json_tool
+from features.db_history_sql_query.db_history_sql_query_ui import run_db_tool
+from features.xml_json_converter.xml_json_converter_ui import run_converter
+from features.generate_json.generate_json_ui import run_json_generator
 from authentication.auth_manager import AuthManager
 from ui.sidebar_ui import show_sidebar
 

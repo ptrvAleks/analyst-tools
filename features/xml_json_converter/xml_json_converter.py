@@ -1,6 +1,6 @@
 import json
 import xmltodict
-from logic.json_utils import validate_json
+from features.json_utils.json_utils import validate_json
 from typing import Any
 import re
 

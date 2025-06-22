@@ -1,7 +1,7 @@
 import streamlit as st
-from logic.json_utils import validate_json
-from logic.json_schema_generator import json_to_json_schema
-from ui.json_ui import display_json_result
+from features.json_utils.json_utils import validate_json
+from features.json_schema_generator.json_schema_generator import json_to_json_schema
+from features.json_utils.json_ui import display_json_result
 
 def run_json_schema_generator():
     st.header("Генератор JSON Schema")
