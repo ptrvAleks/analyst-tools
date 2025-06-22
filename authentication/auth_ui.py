@@ -1,7 +1,6 @@
 # auth_ui.py
 from authentication.auth_manager import AuthManager
 import streamlit as st
-from config import get_environment
 
 def show_login(auth: AuthManager):
     st.title("Авторизация")
