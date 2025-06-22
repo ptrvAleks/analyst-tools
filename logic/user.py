@@ -26,3 +26,9 @@ class User(BaseModel):
                 {"first_name": first_name},
                 merge=True
             )
+
+    @staticmethod
+    def set_user_role(uid: str, role: Optional[str] = None):
+        role_to_set = role if role else "user"
+        db.collection("users").document(uid).set({"role": role_to_set}, merge=True)
+

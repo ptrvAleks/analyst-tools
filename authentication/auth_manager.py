@@ -69,12 +69,14 @@ class AuthManager:
             print("Login failed:", e)
             return False
 
-    def register(self, reg_email: str, reg_pwd: str, reg_first_name: Optional[str] = None) -> bool:
+    def register(self, reg_email: str, reg_pwd: str, reg_first_name: Optional[str] = None, role: str = "user") -> bool:
         try:
             user = self.auth.create_user_with_email_and_password(reg_email, reg_pwd)
             uid = user["localId"]
             if reg_first_name:
                 User.set_user_first_name(uid, reg_first_name)
+            if role:
+                User.set_user_role(uid, role)
             self._finalize_auth(reg_email, uid, reg_first_name)
             return True
         except Exception as e:
