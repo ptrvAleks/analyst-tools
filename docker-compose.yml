@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: analyst-tools-app
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app                   # Монтируем весь проект
+      - ./.streamlit:/app/.streamlit  # Пробрасываем secrets.toml
+#    env_file:
+#      - .env                     # Если хочешь использовать переменные окружения
+    restart: unless-stopped
