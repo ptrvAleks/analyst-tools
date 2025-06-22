@@ -5,27 +5,29 @@ from streamlit_cookies_manager import EncryptedCookieManager
 from cookie_firebase_uid import set_uid_cookie
 from logic.user import User
 from typing import Optional
-
+from config import get_firebase_config, get_environment
 
 
 class AuthManager:
     """Единая точка управления аутентификацией, сессией и ролями."""
 
-
     def __init__(self, cookie_password: str):
-        # Инициализируем и проверяем CookieManager
         self.cookies = EncryptedCookieManager(password=cookie_password)
         if not self.cookies.ready():
-            self.cookies.save()  # создаём пустые
+            self.cookies.save()
             st.stop()
-        # Инициализация Firebase
-        self.firebase = pyrebase.initialize_app(dict(st.secrets["firebaseConfig"]))
+
+        env = get_environment()
+
+        try:
+            firebase_config = get_firebase_config(env)
+        except Exception as e:
+            st.error(f"Ошибка загрузки конфигурации Firebase для среды {env}: {e}")
+            st.stop()
+
+        self.firebase = pyrebase.initialize_app(firebase_config)
         self.auth = self.firebase.auth()
 
-        if not self.cookies.ready():
-            st.stop()
-
-        # Восстанавливаем сессию (если куки валидны)
         self._restore_session()
 
     # ---------------------- public API ----------------------
