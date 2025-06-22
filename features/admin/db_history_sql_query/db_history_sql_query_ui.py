@@ -1,5 +1,5 @@
 import streamlit as st
-from features.db_history_sql_query.db_history_sql_query import build_sql_query, is_valid_guid
+from features.admin.db_history_sql_query.db_history_sql_query import build_sql_query, is_valid_guid
 
 def run_db_tool():
     st.header("Работа с БД")

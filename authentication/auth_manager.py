@@ -1,13 +1,14 @@
 import pyrebase
 import streamlit as st
 from database.db_methods import get_user_role
+from database.db import db
 from streamlit_cookies_manager import EncryptedCookieManager
 from cookie_firebase_uid import set_uid_cookie
 from logic.user import User
 from typing import Optional
 from config import get_firebase_config, get_environment
 import firebase_admin
-from firebase_admin import get_app, credentials
+from firebase_admin import get_app, credentials, auth
 
 
 class AuthManager:
