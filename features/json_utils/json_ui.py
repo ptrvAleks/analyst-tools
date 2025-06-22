@@ -1,6 +1,6 @@
 import streamlit as st
 import re
-from logic.json_utils import validate_json
+from features.json_utils.json_utils import validate_json
 
 def display_json_result(result: dict, original_text: str):
     if result["ok"]:
