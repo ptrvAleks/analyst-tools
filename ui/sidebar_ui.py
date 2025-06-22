@@ -18,6 +18,7 @@ def show_sidebar(auth, user_role, name):
         options = list(tool_actions.keys())
         if user_role == "admin":
             options.append("Работа с БД")
+            options.append("Пользователи")
         choice = st.selectbox("Выберите инструмент:", options)
 
         if choice == "Работа с БД":

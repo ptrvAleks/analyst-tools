@@ -1,13 +1,14 @@
 import pyrebase
 import streamlit as st
 from database.db_methods import get_user_role
+from database.db import db
 from streamlit_cookies_manager import EncryptedCookieManager
 from cookie_firebase_uid import set_uid_cookie
 from logic.user import User
 from typing import Optional
 from config import get_firebase_config, get_environment
 import firebase_admin
-from firebase_admin import get_app, credentials
+from firebase_admin import get_app, credentials, auth
 
 
 class AuthManager:
@@ -69,12 +70,14 @@ class AuthManager:
             print("Login failed:", e)
             return False
 
-    def register(self, reg_email: str, reg_pwd: str, reg_first_name: Optional[str] = None) -> bool:
+    def register(self, reg_email: str, reg_pwd: str, reg_first_name: Optional[str] = None, role: str = "user") -> bool:
         try:
             user = self.auth.create_user_with_email_and_password(reg_email, reg_pwd)
             uid = user["localId"]
             if reg_first_name:
                 User.set_user_first_name(uid, reg_first_name)
+            if role:
+                User.set_user_role(uid, role)
             self._finalize_auth(reg_email, uid, reg_first_name)
             return True
         except Exception as e:
