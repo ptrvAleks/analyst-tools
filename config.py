@@ -22,7 +22,7 @@ def get_firebase_config(env: str = "dev"):
 def get_environment():
     try:
         import streamlit as st
-        if "firebaseConfig" in st.secrets:
+        if "firebase" in st.secrets:
             return "prod"
     except:
         pass
