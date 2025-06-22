@@ -5,7 +5,7 @@ def get_firebase_config(env: str = "dev"):
         st = None
 
     if env == "prod":
-        if st and "firebase_prod" in st.secrets:
+        if st and "firebase" in st.secrets:
             # st.secrets уже словарь → можно напрямую
             firebase_dict = dict(st.secrets["firebase"])
             return firebase_dict
