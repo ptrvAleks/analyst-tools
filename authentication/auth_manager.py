@@ -6,6 +6,8 @@ from cookie_firebase_uid import set_uid_cookie
 from logic.user import User
 from typing import Optional
 from config import get_firebase_config, get_environment
+import firebase_admin
+from firebase_admin import get_app, credentials
 
 
 class AuthManager:
@@ -18,9 +20,23 @@ class AuthManager:
             st.stop()
 
         env = get_environment()
-
         try:
-            firebase_config = get_firebase_config(env)
+            get_app()  # Если уже инициализировано — ничего не делаем
+        except ValueError:
+            # Firebase Admin: только если ещё не был инициализирован
+            try:
+                firebase_config = get_firebase_config(env)
+            except Exception as e:
+                st.error(f"Ошибка загрузки конфигурации Firebase для среды {env}: {e}")
+                st.stop()
+
+            # Важно: initialize_app() нужен только для firebase_admin, если ты его используешь
+            cred = credentials.Certificate(firebase_config)
+            firebase_admin.initialize_app(cred)
+
+        # Firebase Web SDK (Pyrebase): инициализируем в любом случае
+        try:
+            firebase_config = get_firebase_config(env)  # второй вызов, на всякий случай
         except Exception as e:
             st.error(f"Ошибка загрузки конфигурации Firebase для среды {env}: {e}")
             st.stop()

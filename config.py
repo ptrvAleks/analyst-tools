@@ -6,7 +6,6 @@ def get_firebase_config(env: str = "dev"):
 
     if env == "prod":
         if st and "firebase" in st.secrets:
-            # st.secrets уже словарь → можно напрямую
             firebase_dict = dict(st.secrets["firebase"])
             return firebase_dict
         else: print("Prod credentials not found")
