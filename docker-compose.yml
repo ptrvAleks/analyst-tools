@@ -7,8 +7,8 @@ services:
     ports:
       - "8501:8501"
     volumes:
-      - .:/app                   # Монтируем весь проект
-      - ./.streamlit:/app/.streamlit  # Пробрасываем secrets.toml
+      - .:/app
+      - ./.streamlit:/app/.streamlit
 #    env_file:
-#      - .env                     # Если хочешь использовать переменные окружения
+#      - .env
     restart: unless-stopped
