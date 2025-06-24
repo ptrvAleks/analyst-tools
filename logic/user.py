@@ -27,7 +27,7 @@ class User:
 
     @property
     def role(self) -> str:
-        return self._dto.role or "user"
+        return self._dto.role
 
     @role.setter
     def role(self, value: str) -> None:

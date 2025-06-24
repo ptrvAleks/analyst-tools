@@ -18,7 +18,15 @@ class UserRepository:
     def get_conversions(self, user: UserDto):
         docs = db.collection("users").document(user.uid).collection("conversions") \
             .order_by("timestamp", direction=Query.DESCENDING).stream()
-        return [{"id": doc.id, **doc.to_dict()} for doc in docs]
+
+        conversions = []
+        for doc in docs:
+            data = doc.to_dict()
+            ts = data.get("timestamp")
+            if ts and hasattr(ts, "to_datetime"):
+                data["timestamp"] = ts.to_datetime()
+            conversions.append({"id": doc.id, **data})
+        return conversions
 
     def delete_conversion(self, user: UserDto, document_id):
         db.collection("users").document(user.uid).collection("conversions").document(document_id).delete()

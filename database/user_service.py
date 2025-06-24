@@ -1,7 +1,7 @@
 from logic.user import User
 from database.user_repository import UserRepository
 from database.user_dto import UserDto
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 
 class UserService:
     def __init__(self):
@@ -43,3 +43,9 @@ class UserService:
     def delete_user(self, user: User) -> bool:
         dto = user.to_dto()
         return self.repo.delete_user(dto)
+
+    def get_conversions(self, user: User) -> List[Dict[str, Any]]:
+        return self.repo.get_conversions(user.to_dto())
+
+    def delete_conversion(self, user: User, document_id: str) -> bool:
+        return self.repo.delete_conversion(user.to_dto(), document_id)

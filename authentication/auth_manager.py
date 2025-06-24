@@ -62,19 +62,23 @@ class AuthManager:
     def login(self, email: str, pwd: str) -> bool:
         try:
             user_data = self.auth.sign_in_with_email_and_password(email, pwd)
-            uid = user_data["localId"]
+            uid = user_data.get("localId")
+            if not uid:
+                st.error("UID не найден в ответе Firebase.")
+                return False
+
             repo = UserRepository()
 
             user_dto = UserDto(uid=uid, email=email)
             user_dto.first_name = repo.get_user_first_name(user_dto)
             user_dto.role = repo.get_user_role(user_dto)
 
-            user = User(user_dto)  # Domain entity
+            user = User(user_dto)
 
             self._finalize_auth(user)
             return True
         except Exception as e:
-            print("Login failed:", e)
+            st.error(f"Ошибка при входе: {e}")
             return False
 
     def register(self, reg_email: str, reg_pwd: str, reg_first_name: Optional[str] = None, role: str = "user") -> bool:
@@ -113,7 +117,10 @@ class AuthManager:
             user = User(user_dto)
             st.session_state.update({
                 "authenticated": True,
-                "user": user
+                "user": user,
+                "role": role,
+                "first_name": first_name,
+                "uid": uid
             })
         else:
             st.session_state["authenticated"] = False

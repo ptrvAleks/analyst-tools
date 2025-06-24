@@ -4,17 +4,13 @@ from logic.user import User
 from database.user_service import UserService
 
 service = UserService()
-current_user: User | None = st.session_state.get("user")
 
-if current_user is None:
-    st.error("Пользователь не авторизован")
-    st.stop()
-
-if current_user.role != "admin":
-    st.error("Нет доступа")
-    st.stop()
 
 def run_user_list():
+    current_user: User | None = st.session_state.get("user")
+    if current_user.role != "admin":
+        st.error("Нет доступа")
+        st.stop()
     @st.cache_data(show_spinner=False)
     def load_users():
         return service.get_all_users()
