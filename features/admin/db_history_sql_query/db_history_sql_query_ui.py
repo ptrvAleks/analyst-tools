@@ -1,7 +1,9 @@
 import streamlit as st
 from features.admin.db_history_sql_query.db_history_sql_query import build_sql_query, is_valid_guid
+from logic.user import User
 
 def run_db_tool():
+    current_user: User | None = st.session_state.get("user")
     st.header("Работа с БД")
 
     with st.expander("История отпусков пользователя", expanded=True):

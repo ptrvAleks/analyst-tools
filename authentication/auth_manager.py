@@ -1,14 +1,14 @@
 import pyrebase
 import streamlit as st
-from database.db_methods import get_user_role
-from database.db import db
+from database.user_repository import UserRepository
+from database.user_dto import UserDto
 from streamlit_cookies_manager import EncryptedCookieManager
 from cookie_firebase_uid import set_uid_cookie
-from logic.user import User
 from typing import Optional
 from config import get_firebase_config, get_environment
 import firebase_admin
-from firebase_admin import get_app, credentials, auth
+from firebase_admin import get_app, credentials
+from logic.user import User
 
 
 class AuthManager:
@@ -31,7 +31,6 @@ class AuthManager:
                 st.error(f"Ошибка загрузки конфигурации Firebase для среды {env}: {e}")
                 st.stop()
 
-            # Важно: initialize_app() нужен только для firebase_admin, если ты его используешь
             cred = credentials.Certificate(firebase_config)
             firebase_admin.initialize_app(cred)
 
@@ -54,31 +53,42 @@ class AuthManager:
 
     @property
     def role(self):
-        """Ленивая загрузка роли из БД (кешируется в session_state)."""
         if "role" not in st.session_state and self.is_authenticated:
-            st.session_state["role"] = get_user_role(st.session_state["uid"])
+            repo = UserRepository()
+            st.session_state["role"] = repo.get_user_role(UserDto(uid=st.session_state["uid"]))
         return st.session_state.get("role")
 
     # ---- основные операции ----
     def login(self, email: str, pwd: str) -> bool:
         try:
-            user = self.auth.sign_in_with_email_and_password(email, pwd)
-            uid = user["localId"]
-            self._finalize_auth(email, uid)
+            user_data = self.auth.sign_in_with_email_and_password(email, pwd)
+            uid = user_data.get("localId")
+            if not uid:
+                st.error("UID не найден в ответе Firebase.")
+                return False
+
+            repo = UserRepository()
+
+            user_dto = UserDto(uid=uid, email=email)
+            user_dto.first_name = repo.get_user_first_name(user_dto)
+            user_dto.role = repo.get_user_role(user_dto)
+
+            user = User(user_dto)
+
+            self._finalize_auth(user)
             return True
         except Exception as e:
-            print("Login failed:", e)
+            st.error(f"Ошибка при входе: {e}")
             return False
 
     def register(self, reg_email: str, reg_pwd: str, reg_first_name: Optional[str] = None, role: str = "user") -> bool:
         try:
             user = self.auth.create_user_with_email_and_password(reg_email, reg_pwd)
             uid = user["localId"]
-            if reg_first_name:
-                User.set_user_first_name(uid, reg_first_name)
-            if role:
-                User.set_user_role(uid, role)
-            self._finalize_auth(reg_email, uid, reg_first_name)
+            user_dto = UserDto(uid=uid, email=reg_email, first_name=reg_first_name, role=role)
+            UserRepository().create_user(user_dto)
+            user = User(user_dto)
+            self._finalize_auth(user)
             return True
         except Exception as e:
             print("Registration failed:", e)
@@ -99,57 +109,43 @@ class AuthManager:
         email = self.cookies.get("username")
         uid = self.cookies.get("uid")
         role = self.cookies.get("role") or "user"
-        auth = self.cookies.get("auth") == "true"
+        auth_status = self.cookies.get("auth") == "true"
         first_name = self.cookies.get("first_name")
 
-        if auth and email and uid:
-            user = User(email=email, uid=uid, role=role, first_name=first_name)
+        if auth_status and email and uid:
+            user_dto = UserDto(uid=uid, email=email, role=role, first_name=first_name)
+            user = User(user_dto)
             st.session_state.update({
                 "authenticated": True,
-                "user": user,  # ← объект снова в сессии
+                "user": user,
+                "role": role,
+                "first_name": first_name,
+                "uid": uid
             })
         else:
             st.session_state["authenticated"] = False
 
-    def _finalize_auth(
-            self,
-            email: str,
-            uid: str,
-            first_name: Optional[str] = None,
-    ) -> None:
-        """Общая логика для login / register."""
-        # 1. Роль всегда либо 'user', либо 'admin'
-        role = get_user_role(uid) or "user"
 
-        # 2. Если имя не передали (логин) — пробуем достать из Firestore
-        if first_name is None:
-            first_name = User.get_user_first_name(uid)
+    def _finalize_auth(self, user: User) -> None:
+        dto = user.to_dto()
+        st.session_state.update({
+            "authenticated": True,
+            "username": dto.email,
+            "uid": dto.uid,
+            "role": dto.role,
+            "user": user,
+            "name": dto.first_name,
+        })
 
-        # 3. Создаём объект пользователя
-        user = User(email=email, uid=uid, role=role, first_name=first_name)
-
-        # 4. Обновляем session_state
-        st.session_state.update(
-            {
-                "authenticated": True,
-                "username": email,
-                "uid": uid,
-                "role": role,
-                "user": user,
-                "name": first_name,
-            }
-        )
-
-        # 5. Куки (используем единый ключ 'name')
-        self.cookies["username"] = email
-        self.cookies["uid"] = uid
+        self.cookies["username"] = dto.email
+        self.cookies["uid"] = dto.uid
         self.cookies["auth"] = "true"
-        self.cookies["role"] = role
-        if first_name:
-            self.cookies["first_name"] = first_name
+        self.cookies["role"] = dto.role
+        if dto.first_name:
+            self.cookies["first_name"] = dto.first_name
         self.cookies.save()
 
-        set_uid_cookie(uid)
+        set_uid_cookie(dto.uid)
         st.rerun()
 
     @property
