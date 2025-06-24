@@ -1,7 +1,7 @@
 import streamlit as st
 from features.user.xml_json_converter.xml_json_converter import detect_format, convert_json_to_xml, convert_xml_to_json
 from features.user.json_utils.json_ui import display_json_result
-from database.db_methods import get_conversions, save_conversion, delete_conversion
+from database.user_repository import get_conversions, save_conversion, delete_conversion
 from cookie_firebase_uid import get_uid_cookie
 
 
