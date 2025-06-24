@@ -11,7 +11,7 @@ def run_user_list():
     if current_user.role != "admin":
         st.error("Нет доступа")
         st.stop()
-    @st.cache_data(show_spinner=False)
+
     def load_users():
         return service.get_all_users()
 
@@ -92,7 +92,8 @@ def run_user_list():
     cols_per_row = 3
     for i in range(0, len(users), cols_per_row):
         cols = st.columns(cols_per_row)
-        for j, (col, u) in enumerate(zip(cols, users[i:i + cols_per_row])):
+        chunk = users[i:i + cols_per_row]
+        for j, (col, u) in enumerate(zip(cols, chunk)):
             index = i + j
             with col:
                 user_card(u, index)
