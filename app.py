@@ -5,7 +5,7 @@ from features.user.json_utils.json_ui import run_json_tool
 from features.admin.db_history_sql_query.db_history_sql_query_ui import run_db_tool
 from features.user.xml_json_converter.xml_json_converter_ui import run_converter
 from features.user.generate_json.generate_json_ui import run_json_generator
-from features.admin.user_roles.users_list_ui import run_user_list
+from features.admin.users_list.users_list_ui import run_user_list
 from authentication.auth_manager import AuthManager
 from ui.sidebar_ui import show_sidebar
 
