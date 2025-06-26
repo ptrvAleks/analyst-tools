@@ -1,5 +1,5 @@
 from logic.user import User
-from database.repository_provider import get_user_repository
+from repository_provider import get_user_repository
 from database.i_user_repository import IUserRepository
 from database.user_dto import UserDto
 from typing import Optional, List, Dict, Any

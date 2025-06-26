@@ -1,7 +1,7 @@
 # ui/users_page.py
 import streamlit as st
 from database.user_dto import UserDto
-from database.user_service import UserService
+from logic.user_service import UserService
 
 service = UserService()
 

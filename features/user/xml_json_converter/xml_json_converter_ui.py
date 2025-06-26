@@ -1,7 +1,7 @@
 import streamlit as st
 from features.user.xml_json_converter.xml_json_converter import detect_format, convert_json_to_xml, convert_xml_to_json
 from features.user.json_utils.json_ui import display_json_result
-from database.user_service import UserService
+from logic.user_service import UserService
 from database.user_dto import UserDto
 
 service = UserService()

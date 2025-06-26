@@ -1,11 +1,11 @@
 import pyrebase
 import streamlit as st
-from database.repository_provider import get_user_repository
+from repository_provider import get_user_repository
 from database.user_dto import UserDto
 from streamlit_cookies_manager import EncryptedCookieManager
-from cookie_firebase_uid import set_uid_cookie
+from authentication.cookie_firebase_uid import set_uid_cookie
 from typing import Optional
-from config import get_firebase_config, get_environment
+from database.config import get_firebase_config, get_environment
 import firebase_admin
 from firebase_admin import get_app, credentials
 
