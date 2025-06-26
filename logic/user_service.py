@@ -5,8 +5,8 @@ from database.user_dto import UserDto
 from typing import Optional, List, Dict, Any
 
 class UserService:
-    def __init__(self, repo: IUserRepository = get_user_repository()):
-        self.repo = repo
+    def __init__(self, repo: Optional[IUserRepository] = None):
+        self.repo = repo or get_user_repository()
 
     def register_user(self, uid: str, email: str, first_name: Optional[str], role: str = "user") -> None:
         user_dto = UserDto(uid=uid, email=email, first_name=first_name, role=role)

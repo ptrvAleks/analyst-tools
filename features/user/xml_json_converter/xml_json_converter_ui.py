@@ -28,6 +28,7 @@ def run_converter():
                 st.success("Результат (XML):")
                 st.code(converted, language="xml")
                 service.save_conversion(current_user, converted)
+                print(converted)
             elif fmt["format"] == "invalid_json":
                 display_json_result({"ok": False, "error": fmt["error"]}, input_text)
             elif fmt["format"] == "xml":

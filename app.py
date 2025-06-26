@@ -8,12 +8,15 @@ from features.user.generate_json.generate_json_ui import run_json_generator
 from features.admin.users_list.users_list_ui import run_user_list
 from authentication.auth_manager import AuthManager
 from ui.sidebar_ui import show_sidebar
+from shared.session.cookie_session import CookieSessionManager
 
-auth = AuthManager(st.secrets["cookies"]["password"])
+cookie_manager = CookieSessionManager(password=st.secrets["cookies"]["password"])
+auth = AuthManager(cookie_manager)
+
 
 def main():
     if not auth.is_authenticated:
-        show_login(auth)
+        show_login(auth, cookie_manager)
         return
 
     user = auth.user
