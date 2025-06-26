@@ -3,7 +3,6 @@ import streamlit as st
 from repository_provider import get_user_repository
 from database.user_dto import UserDto
 from shared.session.cookie_session import CookieSessionManager
-from authentication.cookie_firebase_uid import set_uid_cookie
 from typing import Optional
 from database.config import get_firebase_config, get_environment
 import firebase_admin
@@ -126,7 +125,6 @@ class AuthManager:
         })
 
         self.cookies.save_user(dto)
-        set_uid_cookie(dto.uid)
         st.rerun()
 
     @property

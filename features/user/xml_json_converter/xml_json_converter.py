@@ -32,21 +32,30 @@ def detect_format(text: str) -> dict:
         return {"format": "unknown"}
 
 def convert_json_to_xml(json_str: str, item_name: str = "item") -> str:
-    obj = json.loads(json_str)
+    try:
+        obj = json.loads(json_str)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Некорректный JSON: {e}")
 
     if not item_name:
         item_name = "item"
 
+    need_wrap_root = True  # По умолчанию оборачиваем в <root>
+
     # Если верхний уровень — список, оборачиваем в item_name
     if isinstance(obj, list):
         obj = {item_name: obj}
-        need_wrap_root = True  # список → несколько элементов → нужен корень
 
     elif isinstance(obj, dict):
-        # Если у словаря более одного ключа, то для корректного XML нужен корень
-        need_wrap_root = len(obj) != 1
+        # Если словарь только с одним ключом, то не оборачиваем
+        if len(obj) == 1:
+            need_wrap_root = False
+        else:
+            need_wrap_root = True
+
     else:
-        # Для других типов (строка, число и т.п.) — оборачиваем в корень
+        # Примитив — оборачиваем обязательно
+        obj = {"value": obj}
         need_wrap_root = True
 
     if need_wrap_root:
@@ -54,10 +63,11 @@ def convert_json_to_xml(json_str: str, item_name: str = "item") -> str:
 
     xml_str = xmltodict.unparse(obj, pretty=True)
 
+    # Если оборачивали только для генерации XML и хотим убрать <root> — делаем это
     if not need_wrap_root:
-        # Убираем корневой тег <root> (так как оборачивали по необходимости, а тут его не хотим)
         lines = xml_str.strip().splitlines()
-        xml_str = "\n".join(lines[1:-1])
+        if len(lines) >= 3:
+            xml_str = "\n".join(lines[1:-1])
 
     return xml_str
 
