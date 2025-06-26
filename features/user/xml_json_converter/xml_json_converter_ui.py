@@ -2,12 +2,12 @@ import streamlit as st
 from features.user.xml_json_converter.xml_json_converter import detect_format, convert_json_to_xml, convert_xml_to_json
 from features.user.json_utils.json_ui import display_json_result
 from database.user_service import UserService
-from logic.user import User
+from database.user_dto import UserDto
 
 service = UserService()
 
 def run_converter():
-    current_user: User | None = st.session_state.get("user")
+    current_user: UserDto | None = st.session_state.get("user")
 
     st.header("🔁 Конвертер JSON ⇄ XML")
 
@@ -44,7 +44,7 @@ def run_converter():
 
 
 def list_widget():
-    current_user: User | None = st.session_state.get("user")
+    current_user: UserDto | None = st.session_state.get("user")
 
     conversions = service.get_conversions(current_user)
 

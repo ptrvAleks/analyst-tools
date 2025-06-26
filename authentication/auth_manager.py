@@ -1,6 +1,6 @@
 import pyrebase
 import streamlit as st
-from database.user_repository import UserRepository
+from database.repository_provider import get_user_repository
 from database.user_dto import UserDto
 from streamlit_cookies_manager import EncryptedCookieManager
 from cookie_firebase_uid import set_uid_cookie
@@ -8,7 +8,6 @@ from typing import Optional
 from config import get_firebase_config, get_environment
 import firebase_admin
 from firebase_admin import get_app, credentials
-from logic.user import User
 
 
 class AuthManager:
@@ -54,7 +53,7 @@ class AuthManager:
     @property
     def role(self):
         if "role" not in st.session_state and self.is_authenticated:
-            repo = UserRepository()
+            repo = get_user_repository()
             st.session_state["role"] = repo.get_user_role(UserDto(uid=st.session_state["uid"]))
         return st.session_state.get("role")
 
@@ -67,15 +66,14 @@ class AuthManager:
                 st.error("UID не найден в ответе Firebase.")
                 return False
 
-            repo = UserRepository()
+            repo = get_user_repository()
 
             user_dto = UserDto(uid=uid, email=email)
             user_dto.first_name = repo.get_user_first_name(user_dto)
             user_dto.role = repo.get_user_role(user_dto)
 
-            user = User(user_dto)
 
-            self._finalize_auth(user)
+            self._finalize_auth(user_dto)
             return True
         except Exception as e:
             st.error(f"Ошибка при входе: {e}")
@@ -86,9 +84,8 @@ class AuthManager:
             user = self.auth.create_user_with_email_and_password(reg_email, reg_pwd)
             uid = user["localId"]
             user_dto = UserDto(uid=uid, email=reg_email, first_name=reg_first_name, role=role)
-            UserRepository().create_user(user_dto)
-            user = User(user_dto)
-            self._finalize_auth(user)
+            get_user_repository().create_user(user_dto)
+            self._finalize_auth(user_dto)
             return True
         except Exception as e:
             print("Registration failed:", e)
@@ -114,10 +111,9 @@ class AuthManager:
 
         if auth_status and email and uid:
             user_dto = UserDto(uid=uid, email=email, role=role, first_name=first_name)
-            user = User(user_dto)
             st.session_state.update({
                 "authenticated": True,
-                "user": user,
+                "user": user_dto,
                 "role": role,
                 "first_name": first_name,
                 "uid": uid
@@ -126,14 +122,13 @@ class AuthManager:
             st.session_state["authenticated"] = False
 
 
-    def _finalize_auth(self, user: User) -> None:
-        dto = user.to_dto()
+    def _finalize_auth(self, dto: UserDto) -> None:
         st.session_state.update({
             "authenticated": True,
             "username": dto.email,
             "uid": dto.uid,
             "role": dto.role,
-            "user": user,
+            "user": dto,
             "name": dto.first_name,
         })
 
@@ -149,5 +144,5 @@ class AuthManager:
         st.rerun()
 
     @property
-    def user(self) -> "User | None":
+    def user(self) -> Optional[UserDto]:
         return st.session_state.get("user")

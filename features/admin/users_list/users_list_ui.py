@@ -1,13 +1,13 @@
 # ui/users_page.py
 import streamlit as st
-from logic.user import User
+from database.user_dto import UserDto
 from database.user_service import UserService
 
 service = UserService()
 
 
 def run_user_list():
-    current_user: User | None = st.session_state.get("user")
+    current_user: UserDto | None = st.session_state.get("user")
     if current_user.role != "admin":
         st.error("Нет доступа")
         st.stop()
@@ -18,7 +18,7 @@ def run_user_list():
     if "edit_user" not in st.session_state:
         st.session_state["edit_user"] = None
 
-    def user_card(user: User, idx: int):
+    def user_card(user: UserDto, idx: int):
         with st.container():
             edit_key = f"edit_{idx}_{user.uid}"
             html = f"""
@@ -40,7 +40,7 @@ def run_user_list():
                 st.session_state["edit_user"] = user
                 st.rerun()
 
-    def edit_user_form(user: User):
+    def edit_user_form(user: UserDto):
         st.markdown("## ✏️ Редактирование пользователя")
 
         if st.button("← Назад"):

@@ -1,12 +1,13 @@
-# database/user_repository.py
+# database/firestore_user_repository.py
 from datetime import datetime, timedelta, timezone
 from database.db import db
 from google.cloud.firestore import Query
-from typing import List, Optional
+from typing import List, Optional, Any, Dict
 from firebase_admin import auth
 from database.user_dto import UserDto
+from database.i_user_repository import IUserRepository
 
-class UserRepository:
+class FirestoreUserRepository(IUserRepository):
     MSK = timezone(timedelta(hours=3))
 
     def save_conversion(self, user: UserDto, result):
@@ -15,7 +16,7 @@ class UserRepository:
             "timestamp": datetime.now(self.MSK)
         })
 
-    def get_conversions(self, user: UserDto):
+    def get_conversions(self, user: UserDto) -> List[Dict[str, Any]]:
         docs = db.collection("users").document(user.uid).collection("conversions") \
             .order_by("timestamp", direction=Query.DESCENDING).stream()
 
@@ -70,8 +71,7 @@ class UserRepository:
     def create_user(self, user: UserDto):
         db.collection("users").document(user.uid).set(user.to_dict(), merge=True)
 
-    @classmethod
-    def get_all_users(cls) -> List[UserDto]:
+    def get_all_users(self) -> List[UserDto]:
         users = []
         page = auth.list_users()
         while page:
