@@ -2,7 +2,7 @@ import pyrebase
 import streamlit as st
 from repository_provider import get_user_repository
 from database.user_dto import UserDto
-from streamlit_cookies_manager import EncryptedCookieManager
+from shared.session.cookie_session import CookieSessionManager
 from authentication.cookie_firebase_uid import set_uid_cookie
 from typing import Optional
 from database.config import get_firebase_config, get_environment
@@ -13,17 +13,16 @@ from firebase_admin import get_app, credentials
 class AuthManager:
     """Единая точка управления аутентификацией, сессией и ролями."""
 
-    def __init__(self, cookie_password: str):
-        self.cookies = EncryptedCookieManager(password=cookie_password)
+    def __init__(self, cookie_manager: CookieSessionManager):
+        self.cookies = cookie_manager
         if not self.cookies.ready():
             self.cookies.save()
             st.stop()
 
         env = get_environment()
         try:
-            get_app()  # Если уже инициализировано — ничего не делаем
+            get_app()
         except ValueError:
-            # Firebase Admin: только если ещё не был инициализирован
             try:
                 firebase_config = get_firebase_config(env)
             except Exception as e:
@@ -33,9 +32,8 @@ class AuthManager:
             cred = credentials.Certificate(firebase_config)
             firebase_admin.initialize_app(cred)
 
-        # Firebase Web SDK (Pyrebase): инициализируем в любом случае
         try:
-            firebase_config = get_firebase_config(env)  # второй вызов, на всякий случай
+            firebase_config = get_firebase_config(env)
         except Exception as e:
             st.error(f"Ошибка загрузки конфигурации Firebase для среды {env}: {e}")
             st.stop()
@@ -57,7 +55,6 @@ class AuthManager:
             st.session_state["role"] = repo.get_user_role(UserDto(uid=st.session_state["uid"]))
         return st.session_state.get("role")
 
-    # ---- основные операции ----
     def login(self, email: str, pwd: str) -> bool:
         try:
             user_data = self.auth.sign_in_with_email_and_password(email, pwd)
@@ -67,11 +64,9 @@ class AuthManager:
                 return False
 
             repo = get_user_repository()
-
             user_dto = UserDto(uid=uid, email=email)
             user_dto.first_name = repo.get_user_first_name(user_dto)
             user_dto.role = repo.get_user_role(user_dto)
-
 
             self._finalize_auth(user_dto)
             return True
@@ -96,31 +91,29 @@ class AuthManager:
         for key in ("authenticated", "username", "uid", "role", "first_name", "user", "login_submitted", "register_submitted"):
             st.session_state.pop(key, None)
 
-        for key in ("username", "auth", "uid", "role", "first_name"):
-            self.cookies[key] = ""
-        self.cookies.save()
+        self.cookies.clear()
         st.rerun()
 
     # ---------------------- internal helpers ----------------------
     def _restore_session(self):
-        email = self.cookies.get("username")
-        uid = self.cookies.get("uid")
-        role = self.cookies.get("role") or "user"
-        auth_status = self.cookies.get("auth") == "true"
-        first_name = self.cookies.get("first_name")
+        data = self.cookies.restore()
 
-        if auth_status and email and uid:
-            user_dto = UserDto(uid=uid, email=email, role=role, first_name=first_name)
+        if data["auth"] and data["email"] and data["uid"]:
+            user_dto = UserDto(
+                uid=data["uid"],
+                email=data["email"],
+                role=data["role"] or "user",
+                first_name=data["first_name"]
+            )
             st.session_state.update({
                 "authenticated": True,
                 "user": user_dto,
-                "role": role,
-                "first_name": first_name,
-                "uid": uid
+                "role": data["role"],
+                "first_name": data["first_name"],
+                "uid": data["uid"]
             })
         else:
             st.session_state["authenticated"] = False
-
 
     def _finalize_auth(self, dto: UserDto) -> None:
         st.session_state.update({
@@ -132,14 +125,7 @@ class AuthManager:
             "name": dto.first_name,
         })
 
-        self.cookies["username"] = dto.email
-        self.cookies["uid"] = dto.uid
-        self.cookies["auth"] = "true"
-        self.cookies["role"] = dto.role
-        if dto.first_name:
-            self.cookies["first_name"] = dto.first_name
-        self.cookies.save()
-
+        self.cookies.save_user(dto)
         set_uid_cookie(dto.uid)
         st.rerun()
 
