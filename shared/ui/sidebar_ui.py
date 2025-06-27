@@ -6,7 +6,9 @@ def show_sidebar(auth, user_role, name):
         "Проверка JSON": "run_json_tool",
         "Конвертер JSON ⇄ XML": "run_converter",
         "Генератор JSON-Schema": "run_json_schema_generator",
-        "Генератор JSON": "run_json_generator",
+        "Создание JSON по схеме": "run_json_generator",
+        "Генератор шаблонов": "run_template_creator",
+        "Генератор JSON": "run_template_builder"
     }
 
     with st.sidebar:
