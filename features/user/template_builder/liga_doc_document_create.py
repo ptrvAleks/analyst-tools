@@ -15,11 +15,14 @@ def load_template(key: str) -> str:
 
 def render_template(template: str, values: dict):
     for key, val in values.items():
-        if val == "null":
-            template = template.replace(f'"${{{key}}}"', "null")
-            template = template.replace(f"${{{key}}}", "null")
+        if val == "null":  # строка "null" — как маркер для подстановки None
+            template = template.replace(f'"${{{key}}}"', "null")  # если переменная в кавычках
+            template = template.replace(f"${{{key}}}", "null")    # если переменная без кавычек
+        elif isinstance(val, (dict, list)):
+            json_val = json.dumps(val, ensure_ascii=False)
+            template = template.replace(f"${{{key}}}", json_val)
         else:
-            template = template.replace(f"${{{key}}}", val)
+            template = template.replace(f"${{{key}}}", str(val))
     return json.loads(template)
 
 def run_liga_doc_create():
