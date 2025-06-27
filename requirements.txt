@@ -12,3 +12,4 @@ pydantic
 pandas
 pydantic[email]
 dotenv
+jinja2

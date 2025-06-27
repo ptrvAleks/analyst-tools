@@ -1,0 +1,17 @@
+{
+  "requestUuid": "${requestUuid}",
+  "legalEntityExternalId": "${legalEntityExternalId}",
+  "sourceSystem": "LPP",
+  "documents": [
+    {
+      "type": "${type}",
+      "name": "${name}",
+      "externalId": "${externalId}",
+      "number": "${number}",
+      "date": "${date}",
+      "fileId": "${fileId}",
+      "users": ${users},
+      "links": ${links}
+    }
+  ]
+}
