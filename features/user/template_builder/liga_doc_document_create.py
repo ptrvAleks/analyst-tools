@@ -88,7 +88,7 @@ def run_liga_doc_create():
     user_inputs["date"] = st.date_input("date").strftime("%Y-%m-%d")
     # Хранение количества ссылок в сессии
     if "link_count" not in st.session_state:
-        st.session_state.link_count = 1
+        st.session_state.link_count = 0
 
     # Кнопки добавить/удалить ссылку
     col1, col2 = st.columns(2)

@@ -24,25 +24,26 @@ def main():
     user = auth.user
     print(f"Вошёл пользователь {user.email} с ролью {user.role} с именем {user.first_name}")
 
-    choice, db_action = show_sidebar(auth, user.role, user.first_name)
+    choice, db_action, generator_action = show_sidebar(auth, user.role, user.first_name)
 
     if choice == "Работа с БД":
         if db_action == "Просмотр":
             run_db_tool()
+    if choice == "Генераторы":
+        if generator_action == "Генератор JSON-Schema":
+            run_json_schema_generator()
+        elif generator_action == "Генератор шаблонов":
+            run_template_creator()
+        elif generator_action == "Генератор JSON":
+            run_template_builder()
     elif choice == "Проверка JSON":
         run_json_tool()
     elif choice == "Конвертер JSON ⇄ XML":
         run_converter()
-    elif choice == "Генератор JSON-Schema":
-        run_json_schema_generator()
     elif choice == "Создание JSON по схеме":
         run_json_generator()
     elif choice == "Пользователи":
         run_user_list()
-    elif choice == "Генератор шаблонов":
-        run_template_creator()
-    elif choice == "Генератор JSON":
-        run_template_builder()
 
 if __name__ == "__main__":
     main()
