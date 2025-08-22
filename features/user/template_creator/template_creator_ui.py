@@ -44,6 +44,9 @@ def run_template_creator():
             template = json_to_template(parsed)
             st.success("✅ JSON обработан в шаблон. Отредактируйте значения переменных при необходимости.")
             modified = recursive_field_editor(template)
+            
+            if modified:
+                service.save_template(current_user, json.dumps(modified, ensure_ascii=False, indent=2))
 
             if st.button("💾 Скачать шаблон с переменными"):
                 buffer = BytesIO()
@@ -56,7 +59,7 @@ def run_template_creator():
                     mime="application/json"
                 )
 
-            service.save_template(current_user, json.dumps(modified, ensure_ascii=False, indent=2))
+            
             
             
         except Exception as e:
