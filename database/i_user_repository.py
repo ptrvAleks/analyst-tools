@@ -38,3 +38,9 @@ class IUserRepository(ABC):
 
     @abstractmethod
     def get_user_first_name(self, user: UserDto) -> Optional[str]: pass
+    
+    @abstractmethod
+    def save_template(self, user: UserDto, result: str) -> None: pass
+    
+    @abstractmethod
+    def get_templates(self, user: UserDto) -> List[Dict[str, Any]]: pass
