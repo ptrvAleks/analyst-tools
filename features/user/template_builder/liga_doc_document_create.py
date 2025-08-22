@@ -19,7 +19,7 @@ def render_template(template: str, values: dict):
             template = template.replace(f'"${{{key}}}"', "null")  # если переменная в кавычках
             template = template.replace(f"${{{key}}}", "null")    # если переменная без кавычек
         elif isinstance(val, (dict, list)):
-            json_val = json.dumps(val, ensure_ascii=False)
+            json_val = json.dumps(val, ensure_ascii=False, indent=4)
             template = template.replace(f"${{{key}}}", json_val)
         else:
             template = template.replace(f"${{{key}}}", str(val))
@@ -46,7 +46,7 @@ def run_liga_doc_create():
             template = load_template("universal")
             # Получаем users из словаря маршрутов (то есть шаблонные данные)
             default_users = routes[selected_route]
-            users_json = json.dumps(default_users, ensure_ascii=False)
+            users_json = json.dumps(default_users, ensure_ascii=False, indent=4)
 
             # Подставляем в шаблон (только users)
             template_with_users = template.replace("${users}", users_json)
@@ -79,7 +79,7 @@ def run_liga_doc_create():
             "type": user_type,
             "legalEntityId": input_id
         })
-    user_inputs["users"] = json.dumps(user_inputs_list, ensure_ascii=False)
+    user_inputs["users"] = json.dumps(user_inputs_list, ensure_ascii=False, indent=4)
     # Пользовательский ввод
     st.subheader("📝 Введите значения")
     user_inputs["name"] = st.text_input("Название документа")
@@ -112,7 +112,7 @@ def run_liga_doc_create():
     if st.button("🚀 Сгенерировать JSON"):
         try:
             if links:
-                user_inputs["links"] = json.dumps(links, ensure_ascii=False)
+                user_inputs["links"] = json.dumps(links, ensure_ascii=False, indent=4)
             else:
                 user_inputs["links"] = "null"  # шаблон примет null
             result = render_template(template, user_inputs)
@@ -120,7 +120,7 @@ def run_liga_doc_create():
             st.json(result)
 
             buffer = BytesIO()
-            buffer.write(json.dumps(result, indent=2, ensure_ascii=False).encode("utf-8"))
+            buffer.write(json.dumps(result, indent=4, ensure_ascii=False).encode("utf-8"))
             buffer.seek(0)
 
             st.download_button(
