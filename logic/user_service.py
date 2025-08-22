@@ -3,6 +3,7 @@ from repository_provider import get_user_repository
 from database.i_user_repository import IUserRepository
 from database.user_dto import UserDto
 from typing import Optional, List, Dict, Any
+import json
 
 class UserService:
     def __init__(self, repo: Optional[IUserRepository] = None):
@@ -51,3 +52,27 @@ class UserService:
 
     def delete_conversion(self, user_dto: UserDto, document_id: str) -> bool:
         return self.repo.delete_conversion(user_dto, document_id)
+    
+    def save_template(self, user_dto: UserDto, result: str):
+        self.repo.save_template(user_dto, result)
+        
+    def get_templates(self, user_dto: UserDto) -> List[Dict[str, Any]]:
+        raw_templates = self.repo.get_templates(user_dto)
+        templates: List[Dict[str, Any]] = []
+
+        for item in raw_templates:
+            template_str = item.get("template")
+            template_dict = {}
+            if isinstance(template_str, str):
+                try:
+                    template_dict = json.loads(template_str)
+                except json.JSONDecodeError:
+                    template_dict = {"_raw": template_str}  # fallback
+
+            templates.append({
+                "id": item.get("id"),
+                "template": json.dumps(template_dict, ensure_ascii=False, indent=4),
+                "timestamp": item.get("timestamp")
+            })
+
+        return templates

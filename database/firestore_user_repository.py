@@ -2,10 +2,11 @@
 from datetime import datetime, timedelta, timezone
 from database.db import db
 from google.cloud.firestore import Query
-from typing import List, Optional, Any, Dict
+from typing import List, Optional, Any, Dict, Union
 from firebase_admin import auth
 from database.user_dto import UserDto
 from database.i_user_repository import IUserRepository
+import json
 
 class FirestoreUserRepository(IUserRepository):
     MSK = timezone(timedelta(hours=3))
@@ -101,3 +102,28 @@ class FirestoreUserRepository(IUserRepository):
         except Exception as e:
             print(f"Ошибка при обновлении email: {e}")
             return False
+        
+    def save_template(self, user: UserDto, result):
+        db.collection("users").document(user.uid).collection("template_creator").add({
+            "template": result,
+            "timestamp": datetime.now(self.MSK)
+        })
+        
+    def get_templates(self, user: UserDto) -> List[Dict[str, Any]]:
+        docs = db.collection("users").document(user.uid) \
+            .collection("template_creator") \
+            .order_by("timestamp", direction=Query.DESCENDING).stream()
+
+        templates: List[Dict[str, Any]] = []
+        for doc in docs:
+            data = doc.to_dict()
+            ts = data.get("timestamp")
+            if ts and hasattr(ts, "to_datetime"):
+                ts = ts.to_datetime()
+
+            templates.append({
+                "id": doc.id,
+                "template": data.get("template"),
+                "timestamp": ts
+            })
+        return templates

@@ -3,6 +3,10 @@ import streamlit as st
 import json
 from features.user.template_builder.template_builder import json_to_template
 from io import BytesIO
+from logic.user_service import UserService
+from database.user_dto import UserDto
+
+service = UserService()
 
 def recursive_field_editor(data, path=""):
     """
@@ -23,6 +27,12 @@ def recursive_field_editor(data, path=""):
         return st.text_input(f"{path}", value=str(data))
 
 def run_template_creator():
+    current_user: UserDto | None = st.session_state.get("user")
+    if current_user is None:
+        st.error("Сначала войдите в систему.")
+        st.stop()
+        
+    
     st.title("📦 Создание шаблона на основе JSON")
     st.markdown("Вставьте JSON, и он автоматически превратится в шаблон с переменными `${ключ}`.\n"
                 "Вы сможете редактировать эти значения, например заменить на `${имя_переменной}`.")
@@ -34,6 +44,9 @@ def run_template_creator():
             template = json_to_template(parsed)
             st.success("✅ JSON обработан в шаблон. Отредактируйте значения переменных при необходимости.")
             modified = recursive_field_editor(template)
+            
+            if modified:
+                service.save_template(current_user, json.dumps(modified, ensure_ascii=False, indent=2))
 
             if st.button("💾 Скачать шаблон с переменными"):
                 buffer = BytesIO()
@@ -45,5 +58,33 @@ def run_template_creator():
                     file_name="template.json",
                     mime="application/json"
                 )
+
+            
+            
+            
         except Exception as e:
             st.error(f"❌ Ошибка: {e}")
+            
+    list_widget()
+
+            
+def list_widget():
+    current_user: UserDto | None = st.session_state.get("user")
+
+    templates = service.get_templates(current_user)
+
+
+    st.subheader("Шаблоны")
+
+    if not templates:
+        st.info("У вас пока нет сохранённых шаблонов")
+    else:
+        for idx, item in enumerate(templates):
+            with st.expander(f"Шаблон от {item['timestamp'].strftime('%d.%m.%Y %H:%M:%S') if item['timestamp'] else '-'}"):
+                st.code(item["template"])
+                document_id = item["id"]
+
+               # if st.button("Удалить", key=f"delete_{document_id}_{idx}"):
+                #    service.delete_conversion(current_user, document_id)
+                #    st.success("Удалено")
+                #    st.rerun()
