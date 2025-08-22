@@ -9,6 +9,10 @@ service = UserService()
 def run_converter():
     current_user: UserDto | None = st.session_state.get("user")
 
+    if current_user is None:
+        st.error("Сначала войдите в систему.")
+        st.stop()
+    
     st.header("🔁 Конвертер JSON ⇄ XML")
 
     input_text = st.text_area("Введите JSON или XML:", height=300)

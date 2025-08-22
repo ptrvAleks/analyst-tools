@@ -32,7 +32,6 @@ def run_template_creator():
         st.error("Сначала войдите в систему.")
         st.stop()
         
-    service.get_templates(current_user)
     
     st.title("📦 Создание шаблона на основе JSON")
     st.markdown("Вставьте JSON, и он автоматически превратится в шаблон с переменными `${ключ}`.\n"
@@ -58,7 +57,31 @@ def run_template_creator():
                 )
 
             service.save_template(current_user, json.dumps(modified, ensure_ascii=False, indent=2))
-            service.get_templates(current_user)
+            
             
         except Exception as e:
             st.error(f"❌ Ошибка: {e}")
+            
+    list_widget()
+
+            
+def list_widget():
+    current_user: UserDto | None = st.session_state.get("user")
+
+    templates = service.get_templates(current_user)
+
+
+    st.subheader("Шаблоны")
+
+    if not templates:
+        st.info("У вас пока нет сохранённых шаблонов")
+    else:
+        for idx, item in enumerate(templates):
+            with st.expander(f"Шаблон от {item['timestamp'].strftime('%d.%m.%Y %H:%M:%S') if item['timestamp'] else '-'}"):
+                st.code(item["template"])
+                document_id = item["id"]
+
+               # if st.button("Удалить", key=f"delete_{document_id}_{idx}"):
+                #    service.delete_conversion(current_user, document_id)
+                #    st.success("Удалено")
+                #    st.rerun()
