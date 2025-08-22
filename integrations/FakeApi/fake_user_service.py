@@ -1,6 +1,6 @@
 # fake_user_service.py
-from integrations.i_fake_user_repository import IFakeUserRepository
-from integrations.fake_user_dto import FakeUserDto
+from integrations.FakeApi.i_fake_user_repository import IFakeUserRepository
+from integrations.FakeApi.fake_user_dto import FakeUserDto
 from typing import List
 
 class FakeUserService:

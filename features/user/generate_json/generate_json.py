@@ -1,7 +1,7 @@
 import json
 import random
-from integrations.faker_user_repository import FakerUserRepository
-from integrations.fake_user_service import FakeUserService
+from integrations.FakeApi.faker_user_repository import FakerUserRepository
+from integrations.FakeApi.fake_user_service import FakeUserService
 from faker import Faker
 from typing import Optional, Any
 

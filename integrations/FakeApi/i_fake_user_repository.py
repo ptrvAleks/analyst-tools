@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List
-from integrations.fake_user_dto import FakeUserDto
+from integrations.FakeApi.fake_user_dto import FakeUserDto
 
 class IFakeUserRepository(ABC):
     @abstractmethod
