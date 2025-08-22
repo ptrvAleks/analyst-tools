@@ -11,7 +11,8 @@ class FakerUserRepository(IFakeUserRepository):
         if response.status_code != 200:
             return []
 
-        return response.json().get("data", [])
+        raw_users = response.json().get("data", [])
+        return [FakeUserDto(firstname=u["firstname"], lastname=u["lastname"]) for u in raw_users]
 
 # users = get_fake_users(3)
 # print(users)
