@@ -71,7 +71,7 @@ class UserService:
 
             templates.append({
                 "id": item.get("id"),
-                "template": json.dumps(template_dict, ensure_ascii=False),
+                "template": json.dumps(template_dict, ensure_ascii=False, indent=4),
                 "timestamp": item.get("timestamp")
             })
 
