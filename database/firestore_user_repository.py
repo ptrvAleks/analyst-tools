@@ -6,7 +6,6 @@ from typing import List, Optional, Any, Dict, Union
 from firebase_admin import auth
 from database.user_dto import UserDto
 from database.i_user_repository import IUserRepository
-import json
 
 class FirestoreUserRepository(IUserRepository):
     MSK = timezone(timedelta(hours=3))
