@@ -20,7 +20,10 @@ def json_to_template(data, parent_key=""):
     if isinstance(data, dict):
         result = {}
         for key, value in data.items():
-            new_key = f"{parent_key}_{key}" if parent_key else key
+            if parent_key:
+                new_key = f"{parent_key}_{key}"
+            else:
+                new_key = key
             if isinstance(value, (dict, list)):
                 result[key] = json_to_template(value, new_key)
             else:
