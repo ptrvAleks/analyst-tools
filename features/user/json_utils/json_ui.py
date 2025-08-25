@@ -1,6 +1,7 @@
 import streamlit as st
 import re
 from features.user.json_utils.json_utils import validate_json
+from shared.session.cookie_session import CookieSessionManager
 
 def display_json_result(result: dict, original_text: str):
     if result["ok"]:
@@ -32,23 +33,59 @@ def display_json_result(result: dict, original_text: str):
         else:
             st.info("Не удалось определить строку с ошибкой.")
 
-def run_json_tool():
+
+def run_json_tool(cookie_manager):
     st.header("JSON-анализатор")
 
-    json_text = st.text_area("Вставьте JSON–текст сюда:", height=200)
+    # Инициализация session_state перед виджетом
+    if "json_text" not in st.session_state:
+        st.session_state.json_text = cookie_manager.get_value("json_text") or ""
+
+    if "clear_uploaded" not in st.session_state:
+        st.session_state.clear_uploaded = False
+
+    # uploader: показываем только если флаг не установлен
+    if not st.session_state.clear_uploaded:
+        st.session_state.uploaded_file = st.file_uploader("📂 Загрузите JSON", type="json")
+        if st.session_state.uploaded_file:
+            data = st.session_state.uploaded_file.getvalue().decode("utf-8")
+            st.session_state.json_text = data
+            cookie_manager.set_value("json_text", data)
+    else:
+        # Если скрыт, создаём кнопку для повторного отображения uploader
+        def reset_uploader():
+            st.session_state.clear_uploaded = False
+
+        st.button("Загрузить новый файл", on_click=reset_uploader)
+
+
+    # --- callback для очистки ---
+    def clear_text():
+        st.session_state.json_text = ""
+        cookie_manager.set_value("json_text", "")
+        st.session_state.clear_uploaded = True  # скрываем uploader временно
+
+    def check_json():
+        data = st.session_state.json_text
+        st.session_state.result = validate_json(data)
+        display_json_result(st.session_state.result, data)
+
+
+    # --- текстовое поле ---
+    st.text_area(
+        "Вставьте JSON–текст сюда:",
+        height=200,
+        key="json_text"
+    )
 
     col1, col2 = st.columns(2)
     with col1:
-        check_btn = st.button("Проверить и форматировать JSON")
+        st.button("Проверить и форматировать JSON", key="check_btn")
     with col2:
-        clear_btn = st.button("Очистить")
+        st.button("Очистить", on_click=clear_text, key="clear_btn")
 
-    if clear_btn:
-        st.rerun()
-
-    if check_btn:
-        result_of_validate = validate_json(json_text)
-        display_json_result(result_of_validate, json_text)
+    if st.session_state.check_btn:
+        check_json()
 
 # Можно сразу запускать при открытии файла
 if __name__ == "__main__":

@@ -37,7 +37,7 @@ def main():
         elif generator_action == "Генератор JSON":
             run_template_builder()
     elif choice == "Проверка JSON":
-        run_json_tool()
+        run_json_tool(cookie_manager)
     elif choice == "Конвертер JSON ⇄ XML":
         run_converter()
     elif choice == "Создание JSON по схеме":
