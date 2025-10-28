@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   streamlit:
     build:
@@ -11,4 +9,6 @@ services:
     volumes:
       - .:/app
       - ./.streamlit:/app/.streamlit
+#    env_file:
+#      - .env
     restart: unless-stopped
