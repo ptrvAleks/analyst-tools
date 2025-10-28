@@ -1,4 +1,3 @@
-import streamlit as st
 from authentication.auth_ui import show_login
 from features.user.json_schema_generator.json_schema_generator_ui import run_json_schema_generator
 from features.user.json_utils.json_ui import run_json_tool
@@ -11,8 +10,12 @@ from shared.ui.sidebar_ui import show_sidebar
 from shared.session.cookie_session import CookieSessionManager
 from features.user.template_builder.template_builder_ui import run_template_builder
 from features.user.template_creator.template_creator_ui import run_template_creator
+from my_secrets import get_secret
+from environments import get_environment
+env = get_environment()
 
-cookie_manager = CookieSessionManager(password=st.secrets["cookies"]["password"])
+password = get_secret(env, "cookiesPassword")
+cookie_manager = CookieSessionManager(password)
 auth = AuthManager(cookie_manager)
 
 
