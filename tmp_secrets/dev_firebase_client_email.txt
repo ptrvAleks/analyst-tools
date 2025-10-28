@@ -1,1 +1,0 @@
-firebase-adminsdk-fbsvc@analyst-tools-dev.iam.gserviceaccount.com
