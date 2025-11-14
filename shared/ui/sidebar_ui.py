@@ -1,32 +1,76 @@
 import streamlit as st
+from typing import Optional
 
-def show_sidebar(auth, user_role, name):
+def show_sidebar(auth, user_role: str, name: Optional[str]):
+    # базовый справочник инструментов (можно расширять)
     tool_actions = {
         "Проверка JSON": "run_json_tool",
         "Конвертер JSON ⇄ XML": "run_converter",
         "Создание JSON по схеме": "run_json_generator"
     }
 
+    # описания (показываем под выбором)
+    descriptions = {
+        "Проверка JSON": "Проверяет корректность JSON, показывает ошибки и путь до проблемного узла.",
+        "Конвертер JSON ⇄ XML": "Конвертирует между JSON и XML.",
+        "Создание JSON по схеме": "Генерирует пример JSON по заданной JSON-Schema."
+    }
+
+    # собираем опции (порядок - можно менять)
+    options = list(tool_actions.keys())
+    if user_role == "admin":
+        options += ["Работа с БД", "Пользователи"]
+    options.append("Генераторы")
+
     db_action = None
     generator_action = None
 
+    # небольшие стили (необязательны, но улучшают вид)
+    st.markdown(
+        """
+        <style>
+        .sidebar .stMarkdown { padding-top: 0.2rem; }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
     with st.sidebar:
+        # шапка панели
+        st.markdown("## 🧰 Инструменты")
+        
         if name:
-            st.header(f"Привет, {name}!")
-        if st.button("Выйти"):
+            st.markdown(f"**Привет, {name}!**")
+        # кнопка выхода
+        if st.button("Выйти", key="logout_btn"):
             auth.logout()
-        st.title("Навигация")
-        options = list(tool_actions.keys())
-        if user_role == "admin":
-            options.append("Работа с БД")
-            options.append("Пользователи")
-        options.append("Генераторы")
 
-        choice = st.selectbox("Выберите инструмент:", options)
+        st.markdown("---")
 
+        # главный выбор инструмента
+        choice = st.selectbox("Выберите инструмент:", options, index=0, help="Выберите инструмент для работы", key="sidebar_choice")
+
+        # если выбранная опция — база данных, показываем expander с опциями (для компактности)
         if choice == "Работа с БД":
-            db_action = st.radio("Выберите действие:", ["Просмотр"], key="db_action")
+            with st.expander("Работа с БД — доступные действия", expanded=True):
+                db_action = st.radio("Выберите действие:", ["Просмотр"], key="db_action")
+        elif choice == "Пользователи":
+            with st.expander("Управление пользователями", expanded=False):
+                st.write("Здесь будут инструменты управления учетными записями.")
         elif choice == "Генераторы":
-            generator_action = st.radio("Выберите:", ["Генератор JSON-Schema", "Генератор шаблонов", "Генератор JSON"], key="generator_action")
+            st.markdown("**Генераторы**")
+            generator_action = st.radio(
+                "Выберите генератор:",
+                ["Генератор JSON-Schema", "Генератор шаблонов", "Генератор JSON"],
+                index=0,
+                key="generator_action"
+            )
+        else:
+            # показываем краткое описание выбранного инструмента
+            desc = descriptions.get(choice)
+            if desc:
+                st.info(desc)
+
+        st.markdown("---")
 
     return choice, db_action, generator_action

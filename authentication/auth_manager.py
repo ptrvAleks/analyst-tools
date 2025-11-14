@@ -51,7 +51,7 @@ class AuthManager:
     def role(self):
         if "role" not in st.session_state and self.is_authenticated:
             repo = get_user_repository()
-            st.session_state["role"] = repo.get_user_role(UserDto(uid=st.session_state["uid"]))
+            st.session_state["role"] = repo.get_user_role(UserDto(uid=st.session_state["uid"], email=st.session_state["email"]))
         return st.session_state.get("role")
 
     def login(self, email: str, pwd: str) -> bool:
@@ -87,7 +87,7 @@ class AuthManager:
 
     def logout(self):
         """Полный выход: очищаем session_state и куки, делаем rerun."""
-        for key in ("authenticated", "username", "uid", "role", "first_name", "user", "login_submitted", "register_submitted"):
+        for key in ("authenticated", "email", "uid", "role", "first_name", "user", "login_submitted", "register_submitted"):
             st.session_state.pop(key, None)
 
         self.cookies.clear()
@@ -117,7 +117,7 @@ class AuthManager:
     def _finalize_auth(self, dto: UserDto) -> None:
         st.session_state.update({
             "authenticated": True,
-            "username": dto.email,
+            "email": dto.email,
             "uid": dto.uid,
             "role": dto.role,
             "user": dto,

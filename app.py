@@ -22,8 +22,12 @@ def main():
         return
 
     user = auth.user
-    print(f"Вошёл пользователь {user.email} с ролью {user.role} с именем {user.first_name}")
+    
+    if user is None:
+        raise ValueError("Пользователь не найден, хотя is_authenticated = True")
 
+    print(f"Вошёл пользователь {user.email} с ролью {user.role} с именем {user.first_name}")
+    
     choice, db_action, generator_action = show_sidebar(auth, user.role, user.first_name)
 
     if choice == "Работа с БД":

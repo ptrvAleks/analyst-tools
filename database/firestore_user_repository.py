@@ -49,16 +49,26 @@ class FirestoreUserRepository(IUserRepository):
             return False
 
     def get_user_role(self, user: UserDto) -> str:
+        if not user.uid:
+            return "user"
+
         doc = db.collection("users").document(user.uid).get()
-        if doc.exists:
-            return doc.to_dict().get("role", "user")
+        if doc and doc.exists:
+            data = doc.to_dict() or {}  # если to_dict() вернул None, подставим пустой словарь
+            role = data.get("role")
+            return role if role else "user"
+        
         return "user"
+
+
 
     def get_user_first_name(self, user: UserDto) -> Optional[str]:
         doc = db.collection("users").document(user.uid).get()
-        if doc.exists:
-            return doc.to_dict().get("first_name")
+        if doc and doc.exists:
+            data = doc.to_dict() or {}  # если to_dict() вернул None, используем пустой словарь
+            return data.get("first_name")  # вернёт None, если ключа нет
         return None
+
 
     def set_user_first_name(self, user: UserDto):
         if user.first_name:
