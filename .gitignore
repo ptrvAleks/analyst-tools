@@ -4,3 +4,4 @@
 /.env.prod
 /venv/
 /.idea/
+__pycache__/

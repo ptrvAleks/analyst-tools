@@ -1,5 +1,5 @@
 class UserDto:
-    def __init__(self, uid: str, email: str = None, first_name: str = None, role: str = None):
+    def __init__(self, uid: str, email: str, first_name: str | None, role: str):
         self.uid = uid
         self.email = email
         self.first_name = first_name
@@ -15,9 +15,19 @@ class UserDto:
 
     @classmethod
     def from_dict(cls, uid: str, data: dict):
+        email=data.get("email")
+        role=data.get("role")
+        
+        if email is None:
+            raise ValueError("Empty email")
+        
+        if role is None:
+            raise ValueError("Empty email")
+        
         return cls(
             uid=uid,
-            email=data.get("email"),
+            email=email,
             first_name=data.get("first_name"),
-            role=data.get("role")
+            role=role
         )
+    
