@@ -9,11 +9,14 @@ def show_login(auth: AuthManager, cookie_manager: CookieSessionManager):
     import streamlit.components.v1 as components
 
     components.html("""
-    <!-- Google Tag Manager -->
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8CPKZ6J3X4"></script>
     <script>
-    // код подтверждения здесь
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-8CPKZ6J3X4');
     </script>
-    <!-- End Google Tag Manager -->
     """, height=0)
 
     if "auth_mode" not in st.session_state:
