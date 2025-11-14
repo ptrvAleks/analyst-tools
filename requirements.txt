@@ -13,3 +13,4 @@ pandas
 pydantic[email]
 dotenv
 jinja2
+pyarrow==22.0.0
