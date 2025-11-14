@@ -1,29 +1,17 @@
 from typing import Optional
+from pydantic import BaseModel
 
-class UserDto:
-    def __init__(self, uid: str, email: str, first_name: Optional[str] = None, role: str = "user"):
-        self.uid = uid
-        self.email = email
-        self.first_name = first_name
-        self.role = role
+class UserDto(BaseModel):
+    uid: str
+    email: str
+    first_name: Optional[str] = None
+    role: str = "user"
 
     def to_dict(self):
-        return {
-            "uid": self.uid,
-            "email": self.email,
-            "first_name": self.first_name,
-            "role": self.role
-        }
+        return self.model_dump(exclude_none=True)
 
     @classmethod
-    def from_dict(cls, uid: str, data: dict):
-        email = data.get("email")
-        role = data.get("role", "user")  # по умолчанию user
-        if email is None:
+    def from_dict(cls, data: dict):
+        if "email" not in data or data["email"] is None:
             raise ValueError("Empty email")
-        return cls(
-            uid=uid,
-            email=email,
-            first_name=data.get("first_name"),
-            role=role
-        )
+        return cls(**data)
