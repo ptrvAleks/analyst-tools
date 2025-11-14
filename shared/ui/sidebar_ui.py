@@ -30,7 +30,6 @@ def show_sidebar(auth, user_role: str, name: Optional[str]):
         """
         <style>
         .sidebar .stMarkdown { padding-top: 0.2rem; }
-        .user-role { color: #6c757d; font-size:12px; margin-top:-6px; }
         </style>
         """,
         unsafe_allow_html=True,
@@ -39,18 +38,12 @@ def show_sidebar(auth, user_role: str, name: Optional[str]):
     with st.sidebar:
         # шапка панели
         st.markdown("## 🧰 Инструменты")
-        # карточка пользователя: две колонки для аватара + текста
-        c1, c2 = st.columns([1, 4])
-        with c1:
-            # можно заменить на st.image(avatar) если есть
-            st.markdown("🧑‍💻", unsafe_allow_html=True)
-        with c2:
-            if name:
-                st.markdown(f"**Привет, {name}!**")
-            st.markdown(f"<div class='user-role'>Роль: {user_role}</div>", unsafe_allow_html=True)
-            # кнопка выхода
-            if st.button("Выйти", key="logout_btn"):
-                auth.logout()
+        
+        if name:
+            st.markdown(f"**Привет, {name}!**")
+        # кнопка выхода
+        if st.button("Выйти", key="logout_btn"):
+            auth.logout()
 
         st.markdown("---")
 
@@ -79,7 +72,5 @@ def show_sidebar(auth, user_role: str, name: Optional[str]):
                 st.info(desc)
 
         st.markdown("---")
-        # подсказки/статусы
-        st.caption("Подсказка: используйте генераторы для ускорения тестовых данных.")
 
     return choice, db_action, generator_action
