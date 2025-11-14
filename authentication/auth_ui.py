@@ -6,6 +6,16 @@ import streamlit as st
 
 def show_login(auth: AuthManager, cookie_manager: CookieSessionManager):
     # Инициализируем режим: сначала пытаемся взять из куки, если нет — ставим login
+    import streamlit.components.v1 as components
+
+    components.html("""
+    <!-- Google Tag Manager -->
+    <script>
+    // код подтверждения здесь
+    </script>
+    <!-- End Google Tag Manager -->
+    """, height=0)
+
     if "auth_mode" not in st.session_state:
         saved_mode = cookie_manager.get("auth_mode")
         st.session_state["auth_mode"] = saved_mode if saved_mode else "login"
