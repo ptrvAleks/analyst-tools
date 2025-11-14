@@ -17,7 +17,7 @@ class CookieSessionManager:
         return self._cookies.get(key)
 
     def save_user(self, user: UserDto):
-        self._cookies["username"] = user.email
+        self._cookies["email"] = user.email
         self._cookies["uid"] = user.uid
         self._cookies["auth"] = "true"
         self._cookies["role"] = user.role
@@ -34,14 +34,14 @@ class CookieSessionManager:
 
 
     def clear(self):
-        for key in ("username", "auth", "uid", "role", "first_name"):
+        for key in ("email", "auth", "uid", "role", "first_name"):
             self._cookies[key] = ""
         self._cookies.save()
 
     def restore(self) -> dict:
         return {
             "uid": self._cookies.get("uid"),
-            "email": self._cookies.get("username"),
+            "email": self._cookies.get("email"),
             "role": self._cookies.get("role"),
             "auth": self._cookies.get("auth") == "true",
             "first_name": self._cookies.get("first_name")
